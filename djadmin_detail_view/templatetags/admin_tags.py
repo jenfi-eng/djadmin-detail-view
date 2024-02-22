@@ -1,7 +1,17 @@
+import json
+
 from django.conf import settings
+from django.core.serializers import serialize
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Model
 from django.db.models.fields.files import FieldFile
+from django.db.models.query import QuerySet
 from django.template import Library
+
+try:
+    from moneyed import Money
+except ImportError:
+    Money = None
 
 from ..url_helpers import admin_path_for
 
@@ -76,3 +86,17 @@ def admin_get_path_url(obj, action="change"):
 @register.simple_tag
 def admin_change_path(obj):
     return admin_path_for(obj)
+
+
+class CustomEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Money):
+            return obj.amount
+        return super().default(obj)
+
+
+@register.filter(is_safe=True)
+def jsonify(object):
+    if isinstance(object, QuerySet):
+        return serialize("json", object)
+    return json.dumps(object, indent=4, cls=CustomEncoder)

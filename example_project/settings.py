@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "djadmin_detail_view",
     "companies",
+    "webpack_loader",
 ]
 
 MIDDLEWARE = [
@@ -123,3 +124,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 DJANGO_ENV = env.str("DJANGO_ENV", "local")
 SERVER_ENVIRONMENTS = ["production"]
+
+# django-webpack-loader
+# ------------------------------------------------------------------------------
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "BUNDLE_DIR_NAME": "bundles/",
+        "CACHE": True,
+        "STATS_FILE": BASE_DIR + "/example_project/webpack/webpack-stats.json",
+        "POLL_INTERVAL": 0.1,
+        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
+    }
+}

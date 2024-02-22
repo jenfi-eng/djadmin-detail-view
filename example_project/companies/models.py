@@ -13,6 +13,9 @@ class Company(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
+    def total_order_value(self):
+        return "$100"
+
     def __str__(self):
         return self.name
 

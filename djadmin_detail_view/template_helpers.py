@@ -1,11 +1,12 @@
 import copy
-from collections.abc import Callable
 from datetime import date, datetime
 from operator import attrgetter
 
 from django.db.models.fields.files import ImageFieldFile
 from django.utils import formats, timezone
 from django.utils.html import format_html
+
+from djadmin_detail_view.defaults import TEMPLATE_TIME_FORMAT
 
 try:
     # From money, Jenfi adds a humanize_money_with_currency function
@@ -28,11 +29,11 @@ def details_table_for(*, obj, details, panel_name=None):
     }
 
 
-def detail(col_name, display_name=None, value_fn: Callable = None):
+def detail(col_name, display_name=None, value: any = None):
     if display_name is None:
         display_name = col_name.replace("_", " ").title()
 
-    return {"col_name": col_name, "display_name": display_name, "value_fn": value_fn}
+    return {"col_name": col_name, "display_name": display_name, "value": value}
 
 
 def table_for(
@@ -78,8 +79,11 @@ col = detail
 
 def fill_missing_values(obj, rows):
     for row in rows:
-        if row["value_fn"]:
-            ret = row["value_fn"](obj)
+        if row["value"]:
+            if callable(row["value"]):
+                ret = row["value"](obj)
+            else:
+                ret = row["value"]
         else:
             ret = attrgetter(row["col_name"])(obj)
 
@@ -87,7 +91,7 @@ def fill_missing_values(obj, rows):
 
         if isinstance(ret, datetime):
             ret = timezone.localtime(ret)
-            ret = formats.date_format(ret, "SHORT_D_M_Y_TIME_Z")
+            ret = formats.date_format(ret, TEMPLATE_TIME_FORMAT)
         elif isinstance(ret, date):
             ret = formats.date_format(ret, format="SHORT_DATE_FORMAT")
         elif Money is not None and isinstance(ret, Money):

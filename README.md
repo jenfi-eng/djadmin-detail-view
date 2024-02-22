@@ -33,6 +33,7 @@ Information dense, grid layout
 
 - Bootstrap
 - django-hosts (Jenfi specific)
+- webpack_loader
 
 ## Code Example
 

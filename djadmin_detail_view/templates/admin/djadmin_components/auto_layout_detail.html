@@ -1,0 +1,48 @@
+{% extends "admin/change_form.html" %}
+
+{% load admin_tags %}
+{% load render_bundle from webpack_loader %}
+
+{% block extrastyle %}
+  {% render_bundle 'admin' 'css' %}
+  {% render_bundle 'admin' 'js' %}
+{% endblock %}
+{% block content %}
+  {% with st_controller="theme-manager" %}
+    <div class="row" data-controller="{{ st_controller }}">
+      <div class="col"></div>
+      {% comment %} <a class="btn btn-sm col-auto" href="{% admin_path_for object %}">Edit</a> {% endcomment %}
+      {% if dropdown_menu %}
+        <div class="dropdown nav-scroller-dropdown col-auto">
+          <button type="button"
+                  class="btn btn-secondary btn-icon btn-sm action-button"
+                  id="orderActionsDropdown"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="true">
+            {{ _("Actions") }}
+            <i class="bi-three-dots-vertical"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end mt-1"
+               aria-labelledby="orderActions"
+               data-popper-placement="bottom-end"
+               style="position: absolute;
+                      inset: 0px 0px auto auto;
+                      margin: 0px;
+                      transform: translate3d(0.5px, 53px, 0px)">
+            {% for item in dropdown_menu %}
+              <a class="dropdown-item"
+                 href="{{ item.url }}"
+                 {% if item.confirm %}onclick="return confirm('{{ item.confirm }}');"{% endif %}>
+                <i class="dropdown-item-icon"></i>{{ item.label }}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      <hr class="my-3" />
+    </div>
+    {% for item in layout %}
+      {% include 'admin/djadmin_components/_auto_row_col.html' with item=item %}
+    {% endfor %}
+  {% endwith %}
+{% endblock %}
