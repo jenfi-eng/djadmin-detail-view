@@ -1,0 +1,51 @@
+$bootstrap-icons-font-dir: 'bootstrap-icons/font/fonts';
+@import 'bootstrap-icons/font/bootstrap-icons';
+@import 'bootstrap/scss/bootstrap';
+
+.btn-primary,
+.btn-danger,
+.btn-warning,
+.btn-secondary,
+.btn-success {
+  color: #fff !important;
+}
+
+.object-list {
+  max-width: 100%;
+  overflow-y: auto;
+}
+
+.messagelist {
+  padding: 20px 40px !important;
+}
+
+#id_orders {
+  label {
+    width: 100%;
+  }
+}
+
+.select2-results__option {
+  color: black;
+}
+
+.dropdown-menu li {
+  position: relative;
+}
+.dropdown-menu .dropdown-submenu {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: -7px;
+}
+.dropdown-menu .dropdown-submenu-left {
+  right: 100%;
+  left: auto;
+}
+.dropdown-menu > li:hover > .dropdown-submenu {
+  display: block;
+}
+
+.changeform-select2-company-ajax {
+  width: 550px;
+}

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "djadmin_detail_view",
+    "companies",
 ]
 
 MIDDLEWARE = [
