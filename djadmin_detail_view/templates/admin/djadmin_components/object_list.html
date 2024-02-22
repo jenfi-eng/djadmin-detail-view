@@ -22,18 +22,18 @@
         <tr>
           {% for obj_detail in row.obj_details %}
             <td>
-              {% is_file_field obj_detail.value as field_is_file %}
-              {% is_link_field obj_detail.value as field_is_link %}
+              {% is_file_field obj_detail.value_out as field_is_file %}
+              {% is_link_field obj_detail.value_out as field_is_link %}
               {% if field_is_file %}
                 {% if obj_detail.value %}
-                  <a href="{{ obj_detail.value.url }}">{{ obj_detail.value }}</a>
+                  <a href="{{ obj_detail.value_out.url }}">{{ obj_detail.value_out }}</a>
                 {% else %}
                   -
                 {% endif %}
               {% elif field_is_link %}
-                <a href="{{ obj_detail.value }}">{{ obj_detail.value }}</a>
+                <a href="{{ obj_detail.value_out }}">{{ obj_detail.value_out }}</a>
               {% else %}
-                {{ obj_detail.value }}
+                {{ obj_detail.value_out }}
               {% endif %}
             </td>
           {% endfor %}

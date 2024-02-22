@@ -41,6 +41,7 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
                 col("created_at"),
                 col("updated_at"),
                 col("is_active"),
+                col("none", value=lambda x: None),
             ],
         )
 
@@ -67,5 +68,49 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
 
 
 @admin.register(Contact)
-class ContactAdmin(admin.ModelAdmin):
-    pass
+class ContactAdmin(AdminChangeListViewDetail, admin.ModelAdmin):
+    def get_default_detail_view(self):
+        return ContactDetailView
+
+
+class ContactDetailView(AdminDetailMixin, DetailView):
+    model = Contact
+
+    def get_context_data(self, request, *args, **kwargs):
+        ctx = super().get_context_data(request, *args, **kwargs)
+
+        contact_details = details_table_for(
+            panel_name="Contact Details",
+            obj=self.object,
+            details=[
+                detail("id"),
+                detail("name"),
+                detail("phone"),
+                detail("email"),
+                detail("created_at"),
+                detail("updated_at"),
+                detail("is_active"),
+            ],
+        )
+
+        company_details = details_table_for(
+            panel_name="Company Details",
+            obj=self.object.company,
+            details=[
+                detail("id"),
+                detail("name"),
+                detail("address"),
+                detail("total_completed_order_amount", value=lambda x: x.total_order_value()),
+            ],
+        )
+
+        ctx["layout"] = [
+            {
+                "row": [
+                    {"col": contact_details},
+                    {"col": company_details},
+                ],
+            },
+        ]
+
+        return ctx

@@ -11,7 +11,7 @@
   {% with st_controller="theme-manager" %}
     <div class="row" data-controller="{{ st_controller }}">
       <div class="col"></div>
-      {% comment %} <a class="btn btn-sm col-auto" href="{% admin_path_for object %}">Edit</a> {% endcomment %}
+      <a class="btn btn-sm col-auto" href="{% admin_path_for object %}">Edit</a>
       {% if dropdown_menu %}
         <div class="dropdown nav-scroller-dropdown col-auto">
           <button type="button"

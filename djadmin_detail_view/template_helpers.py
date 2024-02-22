@@ -101,7 +101,7 @@ def fill_missing_values(obj, rows):
         elif ret is None:
             ret = "-"
 
-        row["value"] = ret
+        row["value_out"] = ret
 
 
 # If the col name is "id/legal_name" or the result is an object with an admin path
