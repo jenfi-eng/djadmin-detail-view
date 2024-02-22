@@ -32,6 +32,7 @@
             {% for item in dropdown_menu %}
               <a class="dropdown-item"
                  href="{{ item.url }}"
+                 {% if item.target %}target="{{ item.target }}"{% endif %}
                  {% if item.confirm %}onclick="return confirm('{{ item.confirm }}');"{% endif %}>
                 <i class="dropdown-item-icon"></i>{{ item.label }}
               </a>

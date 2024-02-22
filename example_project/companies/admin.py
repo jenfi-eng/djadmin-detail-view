@@ -44,6 +44,10 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             ],
         )
 
+        ctx["dropdown_menu"] = [
+            {"label": "Visit Google", "url": "https://www.google.com", "target": "_blank", "confirm": "Go to Google?"},
+        ]
+
         ctx["layout"] = [
             {
                 "row": [
