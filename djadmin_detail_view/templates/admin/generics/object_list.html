@@ -1,0 +1,52 @@
+{% load static tag_extras admin_tags %}
+
+<div class="card mb-5 object-list">
+  <div class="card-header">
+    {{ object_list.panel_name }}
+    <small>
+      {% if object_list.obj_set_limit %}
+        <span>({{ object_list.rows|length }} of {{ object_list.obj_set.count }})</span>
+      {% endif %}
+    </small>
+    <div class="float-end small">
+      {% if object_list.view_all_url %}<a href="{{ object_list.view_all_url }}">View All</a>{% endif %}
+    </div>
+  </div>
+  <table class="table table-striped table-borderless mb-0">
+    <thead>
+      {% for col in object_list.cols %}<th>{{ col.display_name }}</th>{% endfor %}
+      {% if row.actions or object_list.allow_edit %}<th>{{ _("Actions") }}</th>{% endif %}
+    </thead>
+    <tbody>
+      {% for row in object_list.rows %}
+        <tr>
+          {% for obj_detail in row.obj_details %}
+            <td>
+              {% is_file_field obj_detail.value as field_is_file %}
+              {% is_link_field obj_detail.value as field_is_link %}
+              {% if field_is_file %}
+                {% if obj_detail.value %}
+                  <a href="{{ obj_detail.value.url }}">{{ obj_detail.value }}</a>
+                {% else %}
+                  -
+                {% endif %}
+              {% elif field_is_link %}
+                <a href="{{ obj_detail.value }}">{{ obj_detail.value }}</a>
+              {% else %}
+                {{ obj_detail.value }}
+              {% endif %}
+            </td>
+          {% endfor %}
+          <td>
+            {% if row.actions %}
+              {% for action in row.actions %}{{ action }}{% endfor %}
+            {% endif %}
+            {% if object_list.allow_edit %}
+              <a href="{% admin_change_path row.obj %}" class="ms-2">{{ _("Edit") }}</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

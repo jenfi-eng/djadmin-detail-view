@@ -1,0 +1,17 @@
+{% load admin_tags tag_extras %}
+
+<div class="col">
+  {% if item.col.obj %}
+    {% include 'admin/generics/object_details.html' with object_details=item.col %}
+  {% elif 'rows' in item.col %}
+    {% include 'admin/generics/object_list.html' with object_list=item.col %}
+  {% elif item.col|is_list %}
+    {% include 'admin/generics/_auto_row_col.html' with item=item.col %}
+  {% elif item.col is None %}
+    &nbsp;
+  {% elif item.col|is_partial %}
+    {% include item.col %}
+  {% else %}
+    {{ item.col }}
+  {% endif %}
+</div>
