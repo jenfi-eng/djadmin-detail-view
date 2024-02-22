@@ -31,10 +31,14 @@ class AdminChangeListViewDetail:
     def get_list_display(self, request):
         list_display = super().get_list_display(request)
 
-        if "view_details" not in list_display:
-            list_display = list_display + ("view_details",)
+        list_display_list = list(list_display)
 
-        return list_display
+        if "view_details" in list_display_list:
+            list_display_list.remove("view_details")
+
+        list_display_list.insert(1, "view_details")
+
+        return tuple(list_display_list)
 
     @admin.display(description="View Details")
     def view_details(self, obj):
