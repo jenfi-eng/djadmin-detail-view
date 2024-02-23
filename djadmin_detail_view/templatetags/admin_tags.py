@@ -8,6 +8,8 @@ from django.db.models.fields.files import FieldFile
 from django.db.models.query import QuerySet
 from django.template import Library
 
+from djadmin_detail_view.defaults import EXCLUDE_BOOTSTRAP_TAGS
+
 try:
     from moneyed import Money
 except ImportError:
@@ -16,6 +18,11 @@ except ImportError:
 from ..url_helpers import admin_path_for
 
 register = Library()
+
+
+@register.simple_tag
+def exclude_bootstrap_tags():
+    return EXCLUDE_BOOTSTRAP_TAGS
 
 
 @register.filter

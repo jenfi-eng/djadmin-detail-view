@@ -31,9 +31,19 @@ Information dense, grid layout
 
 ## Pre-reqs
 
-- Bootstrap
+- Bootstrap as Webpack
 - django-hosts (Jenfi specific)
 - webpack_loader
+
+## Install
+
+1. Direct add github to `pyproject.toml`, `git@github.com:jenfi-eng/djadmin-detail-view.git`.
+1. Add to `INSTALLED_APPS`
+1. Create a `DetailView` and add mixin `AdminDetailMixin`
+1. To the object's admin add `AdminChangeListViewDetail` and function `get_default_detail_view`
+1. Return the newly created DetailView in `get_default_detail_view`.
+
+See `example_project/companies/admin.py` for reference.
 
 ## Code Example
 
@@ -43,6 +53,7 @@ from djadmin_detail_view.views import AdminChangeListViewDetail, AdminDetailMixi
 
 from my_app.companies.models import Company
 
+@admin.register(Company)
 class CompanyAdmin(AdminChangeListViewDetail, admin.ModelAdmin):
     def get_default_detail_view(self):
         return CompanyDetailView

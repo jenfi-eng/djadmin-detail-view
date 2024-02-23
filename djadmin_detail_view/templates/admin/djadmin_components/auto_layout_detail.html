@@ -1,11 +1,15 @@
 {% extends "admin/change_form.html" %}
 
 {% load admin_tags %}
-{% load render_bundle from webpack_loader %}
 
 {% block extrastyle %}
-  {% render_bundle 'admin' 'css' %}
-  {% render_bundle 'admin' 'js' %}
+  {% exclude_bootstrap_tags as exclude_bootstrap_tags %}
+  {% if not exclude_bootstrap_tags %}
+    {% load render_bundle from webpack_loader %}
+
+    {% render_bundle 'admin' 'css' %}
+    {% render_bundle 'admin' 'js' %}
+  {% endif %}
 {% endblock %}
 {% block content %}
   {% with st_controller="theme-manager" %}
