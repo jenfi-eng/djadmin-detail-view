@@ -12,7 +12,7 @@ class AdminChangeListViewDetail:
         if self.default_detail_view:
             return self.default_detail_view
 
-        raise ValueError("You must define a default_detail_view.")
+        raise ValueError("Please define default_detail_view. Recommended: override `get_default_detail_view` method.")
 
     def get_urls(self):
         detail_view = self.get_default_detail_view()
