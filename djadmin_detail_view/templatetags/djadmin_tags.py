@@ -63,11 +63,6 @@ def get_obj_classname(obj):
     return obj._meta.verbose_name.title()
 
 
-@register.simple_tag
-def env_name():
-    return settings.DJANGO_ENV.upper()
-
-
 @register.filter
 def is_partial(value):
     if isinstance(value, str) and value.count("/") > 1 and value.endswith(".html"):
@@ -97,7 +92,7 @@ def admin_change_path(obj):
 
 class CustomEncoder(DjangoJSONEncoder):
     def default(self, obj):
-        if isinstance(obj, Money):
+        if Money is not None and isinstance(obj, Money):
             return obj.amount
         return super().default(obj)
 
