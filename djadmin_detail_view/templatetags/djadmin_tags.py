@@ -7,6 +7,7 @@ from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query import QuerySet
 from django.template import Library
+from django.urls import NoReverseMatch
 
 from djadmin_detail_view.defaults import EXCLUDE_BOOTSTRAP_TAGS
 
@@ -102,3 +103,13 @@ def jsonify(object):
     if isinstance(object, QuerySet):
         return serialize("json", object)
     return json.dumps(object, indent=4, cls=CustomEncoder)
+
+
+@register.simple_tag
+def check_simple_history(obj):
+    try:
+        admin_path_for(obj, "history")
+
+        return True
+    except NoReverseMatch:
+        return False

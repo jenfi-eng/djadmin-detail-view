@@ -32,6 +32,7 @@ def generate_company_and_contacts(apps, schema_editor):
 
     Company = apps.get_model("companies", "Company")
     Contact = apps.get_model("companies", "Contact")
+    User = apps.get_model(settings.AUTH_USER_MODEL)
 
     company = Company()
     company.name = fake.company()
@@ -42,6 +43,11 @@ def generate_company_and_contacts(apps, schema_editor):
     company.description = fake.text()
     company.is_active = True
 
+    company.save()
+
+    # Create an extra history
+    company.name = fake.company()
+    company.changed_by = User.objects.first()
     company.save()
 
     for _ in range(5):

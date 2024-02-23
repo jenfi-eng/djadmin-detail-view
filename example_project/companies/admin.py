@@ -1,6 +1,7 @@
 from companies.models import Company, Contact
 from django.contrib import admin
 from django.views.generic import DetailView
+from simple_history.admin import SimpleHistoryAdmin
 
 from djadmin_detail_view.mixins import AdminChangeListViewDetail, AdminDetailMixin
 from djadmin_detail_view.template_helpers import col, detail, details_table_for, table_for
@@ -8,7 +9,7 @@ from djadmin_detail_view.template_helpers import col, detail, details_table_for,
 
 # Register your models here.
 @admin.register(Company)
-class CompanyAdmin(AdminChangeListViewDetail, admin.ModelAdmin):
+class CompanyAdmin(AdminChangeListViewDetail, SimpleHistoryAdmin):
     list_display = ("id", "name", "address")
 
     def get_default_detail_view(self):
@@ -70,7 +71,7 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
 
 
 @admin.register(Contact)
-class ContactAdmin(AdminChangeListViewDetail, admin.ModelAdmin):
+class ContactAdmin(AdminChangeListViewDetail, SimpleHistoryAdmin):
     def get_default_detail_view(self):
         return ContactDetailView
 

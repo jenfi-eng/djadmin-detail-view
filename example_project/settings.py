@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "djadmin_detail_view",
     "companies",
     "webpack_loader",
+    "simple_history",
 ]
 
 MIDDLEWARE = [
