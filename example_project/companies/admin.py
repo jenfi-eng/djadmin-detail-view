@@ -9,6 +9,8 @@ from djadmin_detail_view.template_helpers import col, detail, details_table_for,
 # Register your models here.
 @admin.register(Company)
 class CompanyAdmin(AdminChangeListViewDetail, admin.ModelAdmin):
+    list_display = ("id", "name", "address")
+
     def get_default_detail_view(self):
         return CompanyDetailView
 

@@ -4,23 +4,29 @@ Django Admin's missing `DetailView`.
 
 Allows easy creation of a `DetailView` via DSL for an object in Django Admin.
 
+![Companies' changelist added View](images/changelist.png)
+
+![Company's DetailView](images/detail_view_company.png)
+
+![Contact's DetailView](images/detail_view_contact.png)
+
 ## Why this exists
 
-Django Admin's is missing detail views (by design). It's strengths lie in viewing specific objects and being able to modify them.
+Django Admin's is missing detail views (by design). It's strengths lie in administering specific objects via form modification.
 
-A common need is to allow internal staff/admins to view objects and and their related objects.
+But, a common need is to allow internal staff/admins to view specific objects and and their related objects. Historically the recommendation was to build a separate website/frontend for this.
 
 ## Theory
 
-I have `Company`, `ContactInfo`, `SalesLeads`, `Orders`. Internal staff want to quickly understand the status of a particular `Company` so a simple View displaying these 4 objects is very beneficial.
+With models `Company`, `ContactInfo`, `SalesLeads`, `Orders`, Internal staff want to quickly understand the status of a particular `Company` so a simple View displaying these 4 objects is very beneficial.
 
 Then I can drill down into a `Order` and see all related `Product`s, `OrderStatusUpdate`s, `SalesComments`.
 
-Via DSL, it is very fast to stand up `DetailView`s for many objects.
+Via DSL, it is fast to stand up `DetailView`s for many objects.
 
 ## Beliefs
 
-Information dense, grid layout
+Information dense, grid layout. Function over form.
 
 ## Features
 
@@ -32,7 +38,6 @@ Information dense, grid layout
 ## Pre-reqs
 
 - Bootstrap as Webpack
-- django-hosts (Jenfi specific)
 - webpack_loader
 
 ## Install
@@ -101,3 +106,13 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
 This project is not ready for wider consumption. It is currently built for Jenfi and its internal needs. Thus, it has specific requirements such as `django-hosts` that may need to be abstracted away.
 
 PRs are welcome to make it more generally accessible.
+
+## TODO
+
+1. Add specs.
+1. Versioning and release on pypi.
+1. Allow non-webpack based installs.
+
+## Credit
+
+This project takes a lot of inspiration from Rail's [ActiveAdmin](https://github.com/activeadmin/activeadmin) and its DSL.
