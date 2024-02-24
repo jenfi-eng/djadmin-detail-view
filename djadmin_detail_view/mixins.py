@@ -15,18 +15,31 @@ class AdminChangeListViewDetail:
         raise ValueError("Please define default_detail_view. Recommended: override `get_default_detail_view` method.")
 
     def get_urls(self):
+        default_urls = super().get_urls()
+
+        urls = self._remove_default_detail_redirect(default_urls)
+        urls = self._add_default_detail(urls)
+
+        return urls
+
+    def _remove_default_detail_redirect(self, urls):
+        cleaned_urls = [
+            url
+            for url in urls
+            if not (url.name is None and url.lookup_str == "django.views.generic.base.RedirectView")
+        ]
+        return cleaned_urls
+
+    def _add_default_detail(self, urls):
         detail_view = self.get_default_detail_view()
 
-        urls = [
-            path(
-                f"<{detail_view.pk_url_kwarg}>/",
-                self.admin_site.admin_view(detail_view.as_view(admin_obj=self)),
-                name=admin_path_name(detail_view.model, "detail"),
-            ),
-        ]
+        detail_path = path(
+            f"<{detail_view.pk_url_kwarg}>/",
+            self.admin_site.admin_view(detail_view.as_view(admin_obj=self)),
+            name=admin_path_name(detail_view.model, "detail"),
+        )
 
-        urls += super().get_urls()
-        return urls
+        return urls + [detail_path]
 
     def get_list_display(self, request):
         list_display = super().get_list_display(request)
