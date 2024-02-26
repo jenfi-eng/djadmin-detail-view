@@ -19,11 +19,14 @@ def admin_filtered_list_path_for(obj, **kwargs):
     return f"{path}?{filter_str}"
 
 
-def auto_link(obj, action, text=None):
+def auto_link(obj, action, text=None, html_class=None):
     admin_path = admin_path_for(obj, action)
 
     if text is None:
         text = obj
+
+    if html_class:
+        return format_html('<a href="{}" class="{}">{}</a>', admin_path, html_class, text)
 
     return format_html('<a href="{}">{}</a>', admin_path, text)
 
