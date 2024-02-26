@@ -25,7 +25,7 @@
         <div class="dropdown nav-scroller-dropdown col-auto">
           <button type="button"
                   class="btn btn-secondary btn-icon btn-sm action-button"
-                  id="orderActionsDropdown"
+                  id="actionsDropdown"
                   data-bs-toggle="dropdown"
                   aria-expanded="true">
             {{ _("Actions") }}
@@ -39,7 +39,7 @@
                       margin: 0px;
                       transform: translate3d(0.5px, 53px, 0px)">
             {% for item in dropdown_menu|filter_none %}
-              <a class="dropdown-item" href="{{ item.url }}" {% if item.html_attrs %} {% for attr, value in item.html_attrs.items %}{{ attr }}="{{ value }}"{% endfor %} {% endif %} {% if item.target %}target="{{ item.target }}"{% endif %} {% if item.confirm %}onclick="return confirm('{{ item.confirm }}');"{% endif %}>
+              <a class="dropdown-item{% if item.class %} {{ item.class }}{% endif %}" href="{{ item.url }}" {% if item.html_attrs %} {% for attr, value in item.html_attrs.items %}{{ attr }}="{{ value }}"{% endfor %} {% endif %} {% if item.target %}target="{{ item.target }}"{% endif %} {% if item.confirm %}onclick="return confirm('{{ item.confirm }}');"{% endif %}>
                 <i class="dropdown-item-icon"></i>{{ item.label }}
               </a>
             {% endfor %}

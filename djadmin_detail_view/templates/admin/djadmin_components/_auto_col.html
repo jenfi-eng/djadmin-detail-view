@@ -1,7 +1,7 @@
 {% load djadmin_tags %}
 
 <div class="col">
-  {% if item.col.obj %}
+  {% if 'obj' in item.col %}
     {% include 'admin/djadmin_components/object_details.html' with object_details=item.col %}
   {% elif 'rows' in item.col %}
     {% include 'admin/djadmin_components/object_list.html' with object_list=item.col %}
