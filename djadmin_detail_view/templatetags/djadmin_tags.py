@@ -113,3 +113,8 @@ def check_simple_history(obj):
         return True
     except NoReverseMatch:
         return False
+
+
+@register.filter
+def filter_none(list):
+    return [item for item in list if item is not None]
