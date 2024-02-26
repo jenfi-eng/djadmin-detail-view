@@ -25,7 +25,7 @@
               {% is_file_field obj_detail.value_out as field_is_file %}
               {% is_link_field obj_detail.value_out as field_is_link %}
               {% if field_is_file %}
-                {% if obj_detail.value %}
+                {% if obj_detail.value_out %}
                   <a href="{{ obj_detail.value_out.url }}">{{ obj_detail.value_out }}</a>
                 {% else %}
                   -
