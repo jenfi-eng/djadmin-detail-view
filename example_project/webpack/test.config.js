@@ -9,7 +9,7 @@ config = merge(commonConfig, {
   mode: 'development',
   devtool: 'inline-source-map',
   output: {
-    path: path.resolve(__dirname, '../example_project/static/bundles_test/'),
+    path: path.resolve(__dirname, '../static/bundles_test/'),
     publicPath: '/static/bundles_test/',
     filename: 'js/[name].js',
     chunkFilename: 'js/[name].js',

@@ -28,7 +28,7 @@ class CompileAssetsOnChangeMixin:
     @classmethod
     def _has_hash_changed(cls, hash_value):
         """Check if the hash value has changed since the last run."""
-        cache_file_path = Path(settings.ROOT_DIR, "apps", "static", "bundles_test", cls.CACHE_FILE)
+        cache_file_path = Path(settings.ROOT_DIR, "example_project", "static", "bundles_test", cls.CACHE_FILE)
 
         try:
             with open(cache_file_path) as f:

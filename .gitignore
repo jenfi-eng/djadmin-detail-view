@@ -276,9 +276,9 @@ docker/support
 .idea
 
 example_project/static/bundles/
-webpack/webpack-stats.json
+webpack-stats.json
+webpack-stats-test.json
 example_project/static/bundles_test/
-webpack/webpack-stats-test.json
 
 tmp/
 import-db.sh
