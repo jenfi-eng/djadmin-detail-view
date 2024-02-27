@@ -7,6 +7,7 @@ from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query import QuerySet
 from django.template import Library
+from django.template.loader import get_template
 from django.urls import NoReverseMatch
 
 from djadmin_detail_view.defaults import EXCLUDE_BOOTSTRAP_TAGS
@@ -118,3 +119,14 @@ def check_simple_history(obj):
 @register.filter
 def filter_none(list):
     return [item for item in list if item is not None]
+
+
+@register.simple_tag(takes_context=True)
+def include_dynamic_with(context, template_name, args_dict):
+    # Get the template object
+    template_obj = get_template(template_name)
+    # Create a new context based on the current one, but also add the kwargs
+    new_context = context.flatten()
+    new_context.update(args_dict)
+    # Render the template with the new context
+    return template_obj.render(new_context)
