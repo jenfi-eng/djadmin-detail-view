@@ -1,6 +1,7 @@
 import factory
 import faker
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+from factory import Faker, post_generation
 from factory.django import DjangoModelFactory
 
 from ..models import Company, Contact
@@ -33,8 +34,27 @@ class ContactFactory(DjangoModelFactory):
 
 
 class UserFactory(DjangoModelFactory):
+    @post_generation
+    def password(self, create: bool, extracted, **kwargs):
+        password = (
+            extracted
+            if extracted
+            else Faker(
+                "password",
+                length=42,
+                special_chars=True,
+                digits=True,
+                upper_case=True,
+                lower_case=True,
+            ).evaluate(None, None, extra={"locale": None})
+        )
+        self.set_password(password)
+        self.save()
+
     class Meta:
-        model = User
+        model = get_user_model()
+        django_get_or_create = ["email"]
+        skip_postgeneration_save = True
 
     username = factory.Faker("user_name")
     email = factory.Faker("email")

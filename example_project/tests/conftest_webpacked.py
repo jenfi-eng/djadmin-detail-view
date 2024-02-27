@@ -96,7 +96,7 @@ class UseRealWebpackmixin(CompileAssetsOnChangeMixin):
 
         def new_loader(config_name):
             config = utils.load_config(config_name)
-            loader_class = utils.import_string("webpack_loader.loader.WebpackLoader")
+            loader_class = utils.import_string("webpack_loader.loaders.WebpackLoader")
             return loader_class(config_name, config)
 
         utils.get_loader = new_loader

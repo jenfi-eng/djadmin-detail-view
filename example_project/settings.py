@@ -117,8 +117,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
+STATIC_ROOT = str(ROOT_DIR / "staticfiles")
 
 STATIC_URL = "/static/"
+STATICFILES_DIRS = [str(ROOT_DIR / "example_project" / "static")]
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
 
 LOGIN_URL = "/auth/login/"
 

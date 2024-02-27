@@ -41,7 +41,7 @@ class SecureLiveServerTestCase(LiveServerTestCase):
 
 class BrowserSslLiveServerTestCase(StaticLiveServerTestCase):
     server_thread_class = SecureLiveServerThread
-    host = "app.lvh.me"
+    host = "lvh.me"
 
     @classproperty
     def live_server_url(cls):
