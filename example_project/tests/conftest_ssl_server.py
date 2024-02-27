@@ -4,7 +4,6 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import environ
-from apps.users.tests.factories import UserFactory
 from django.conf import settings
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import Client
@@ -12,6 +11,8 @@ from django.test.testcases import LiveServerTestCase, LiveServerThread, QuietWSG
 from django.utils.functional import classproperty
 from playwright.sync_api import sync_playwright
 from sslserver.management.commands.runsslserver import SecureHTTPServer, WSGIRequestHandler
+
+from example_project.companies.tests.factories import UserFactory
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ class SecureQuietWSGIRequestHandler(WSGIRequestHandler, QuietWSGIRequestHandler)
 
 class SecureLiveServerThread(LiveServerThread):
     def _create_server(self, connections_override=None):
-        certs_path = Path(settings.ROOT_DIR, "config", "test_certs")
+        certs_path = Path(settings.ROOT_DIR, "tests", "test_certs")
         cert_file = certs_path / "lvh-cert.pem"
         key_file = certs_path / "lvh-key.pem"
 

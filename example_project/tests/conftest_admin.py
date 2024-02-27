@@ -1,10 +1,11 @@
-from apps.users.tests.factories import UserFactory
 from django.test import override_settings
 from django.urls import reverse
 from faker import Faker
 from playwright.sync_api import Page
 
 from djadmin_detail_view.url_helpers import admin_path_for
+
+from ..companies.tests.factories import UserFactory
 
 
 class AdminTestMixin:

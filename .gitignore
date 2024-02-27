@@ -275,9 +275,9 @@ webpack-stats.json
 docker/support
 .idea
 
-apps/static/bundles/
+example_project/static/bundles/
 webpack/webpack-stats.json
-apps/static/bundles_test/
+example_project/static/bundles_test/
 webpack/webpack-stats-test.json
 
 tmp/

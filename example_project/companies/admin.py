@@ -1,10 +1,10 @@
-from companies.models import Company, Contact
 from django.contrib import admin
 from django.views.generic import DetailView
 from simple_history.admin import SimpleHistoryAdmin
 
 from djadmin_detail_view.mixins import AdminChangeListViewDetail, AdminDetailMixin
 from djadmin_detail_view.template_helpers import col, detail, details_table_for, table_for
+from example_project.companies.models import Company, Contact
 
 
 # Register your models here.

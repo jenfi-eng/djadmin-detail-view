@@ -15,7 +15,7 @@ repos:
       - id: check-builtin-literals
       - id: check-case-conflict
       - id: detect-private-key
-        exclude: config/test_certs/
+        exclude: tests/test_certs/
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.0.0-alpha.9-for-vscode

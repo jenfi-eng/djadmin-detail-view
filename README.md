@@ -117,7 +117,7 @@ Add config to allow specs to be run inside VSCode.
 // .vscode/settings.json
 {
   "python.testing.pytestArgs": [
-    "example_project/"
+    ""
   ],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
@@ -132,7 +132,7 @@ Add config to allow specs to be run inside VSCode.
     "name": "Django Web",
     "type": "python",
     "request": "launch",
-    "program": "${workspaceFolder}/example_project/server.py",
+    "program": "${workspaceFolder}/server.py",
     "args": [],
     "django": true,
     "justMyCode": false

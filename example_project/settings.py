@@ -11,12 +11,14 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 import environ
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 load_dotenv()  # Only use for local.
 
@@ -45,9 +47,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "djadmin_detail_view",
-    "companies",
+    "example_project.companies",
     "webpack_loader",
-    "simple_history",
 ]
 
 MIDDLEWARE = [
