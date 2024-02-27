@@ -107,6 +107,38 @@ This project is not ready for wider consumption. It is currently built for Jenfi
 
 PRs are welcome to make it more generally accessible.
 
+## VSCode
+
+### Testing
+
+Add config to allow specs to be run inside VSCode.
+
+```javascript
+// .vscode/settings.json
+{
+  "python.testing.pytestArgs": [
+    "example_project/"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+}
+
+```
+
+### Web Launch Config
+
+```javascript
+{
+    "name": "Django Web",
+    "type": "python",
+    "request": "launch",
+    "program": "${workspaceFolder}/example_project/server.py",
+    "args": [],
+    "django": true,
+    "justMyCode": false
+},
+```
+
 ## TODO
 
 1. Add specs.

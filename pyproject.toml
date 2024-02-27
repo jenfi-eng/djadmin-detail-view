@@ -29,6 +29,9 @@ django-extensions = "^3.2.3"
 uvicorn = "^0.27.1"
 faker = "^23.2.1"
 django-simple-history = "^3.4.0"
+py-expect-to-change = { git = "ssh://git@github.com/jenfi-eng/py-expect-to-change.git", rev = "master" }
+playwright = "^1.41.2"
+django-sslserver = { git = "https://github.com/jenfi-eng/django-sslserver.git", rev = "master" }
 
 
 [build-system]
