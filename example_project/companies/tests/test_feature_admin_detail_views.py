@@ -33,4 +33,10 @@ class TestAdminDetailView(UseRealWebpackmixin, BrowserSslLiveServerTestCase):
         page.wait_for_selector(view_link_selector)
         page.click(view_link_selector)
 
-        page.wait_for_selector("h1").assert_text(self.company.name)
+        contact = self.company.contact_set.first()
+        page.wait_for_selector(f"text={contact.name}").click()
+
+        assert page.is_visible(f"text={contact.name}")
+
+        # TODO: Add partial test
+        # TODO: Add file preview test
