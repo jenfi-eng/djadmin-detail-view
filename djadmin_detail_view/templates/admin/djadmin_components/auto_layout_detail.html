@@ -49,15 +49,13 @@
               </a>
               {% if item.confirm %}
                 <script>
-                  document.getElementById("dropdown-item-{{ item.label }}").addEventListener("click", function() {
+                  document.getElementById("dropdown-item-{{ item.label }}").addEventListener("click", function(event) {
+                    event.preventDefault();
                     if (confirm("{{ item.confirm }}")) {
-                      event.preventDefault();
                       const url = new URL(event.target.href);
                       url.searchParams.set("confirm", "1");
                       window.location.href = url.href;
                     }
-
-                    return false;
                   })
                 </script>
               {% endif %}
