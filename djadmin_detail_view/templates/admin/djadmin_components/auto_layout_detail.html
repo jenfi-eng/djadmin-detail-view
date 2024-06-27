@@ -39,9 +39,14 @@
                       margin: 0px;
                       transform: translate3d(0.5px, 53px, 0px)">
             {% for item in dropdown_menu|filter_none %}
-              <a class="dropdown-item{% if item.class %} {{ item.class }}{% endif %}" href="{{ item.url }}" {% if item.html_attrs %} {% for attr, value in item.html_attrs.items %}{{ attr }}="{{ value }}"{% endfor %} {% endif %} {% if item.target %}target="{{ item.target }}"{% endif %} {% if item.confirm %}onclick="return confirm('{{ item.confirm }}');"{% endif %}>
+              <a id="dropdown-item-{% item.label %}"{% if item.class %} class="dropdown-item{% if item.class %} {{ item.class }}{% endif %}" href="{{ item.url }}" {% if item.html_attrs %} {% for attr, value in item.html_attrs.items %}{{ attr }}="{{ value }}"{% endfor %} {% endif %} {% if item.target %}target="{{ item.target }}"{% endif %}>
                 <i class="dropdown-item-icon"></i>{{ item.label }}
               </a>
+              <script>
+                $("dropdown-item-{{ item.label }}").on("click", function() {
+                  return confirm("{{ item.confirm }}");
+                })
+              </script>
             {% endfor %}
           </div>
         </div>
