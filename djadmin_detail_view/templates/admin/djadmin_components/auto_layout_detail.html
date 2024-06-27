@@ -50,7 +50,12 @@
               {% if item.confirm %}
                 <script>
                   document.getElementById("dropdown-item-{{ item.label }}").addEventListener("click", function() {
-                    return confirm("{{ item.confirm }}");
+                    if (confirm("{{ item.confirm }}")) {
+                      event.preventDefault();
+                      const url = new URL(event.target.href);
+                      url.searchParams.set("confirm", "1");
+                      window.location.href = url.href;
+                    }
                   })
                 </script>
               {% endif %}
