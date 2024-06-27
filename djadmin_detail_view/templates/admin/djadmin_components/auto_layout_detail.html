@@ -47,11 +47,13 @@
                 {% if item.target %}target="{{ item.target }}"{% endif %}>
                 <i class="dropdown-item-icon"></i>{{ item.label }}
               </a>
-              <script>
-                document.getElementById("dropdown-item-{{ item.label }}").addEventListener("click", function() {
-                  return confirm("{{ item.confirm }}");
-                })
-              </script>
+              {% if item.confirm %}
+                <script>
+                  document.getElementById("dropdown-item-{{ item.label }}").addEventListener("click", function() {
+                    return confirm("{{ item.confirm }}");
+                  })
+                </script>
+              {% endif %}
             {% endfor %}
           </div>
         </div>
