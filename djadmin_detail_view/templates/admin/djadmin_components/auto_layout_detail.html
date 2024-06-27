@@ -48,7 +48,7 @@
                 <i class="dropdown-item-icon"></i>{{ item.label }}
               </a>
               <script>
-                $("#dropdown-item-{{ item.label }}").on("click", function() {
+                document.getElementById("dropdown-item-{{ item.label }}").addEventListener("click", function() {
                   return confirm("{{ item.confirm }}");
                 })
               </script>
