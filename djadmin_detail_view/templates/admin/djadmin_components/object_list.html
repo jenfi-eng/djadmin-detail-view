@@ -52,7 +52,7 @@
       {% if object_list.add_url %}
         <tr>
           <td>
-            <a class="btn btn-primary" href="{{ object_list.add_url }}">{{ _("Add") }}</a>
+            <a class="btn btn-primary" href="{{ object_list.add_url }}">{{ object_list.add_label|default:_("Add") }}</a>
           </td>
         </tr>
       {% endif %}
