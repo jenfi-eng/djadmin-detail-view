@@ -78,7 +78,7 @@ def table_for(
         "allow_edit": allow_edit,
         "add_url": add_url,
         "add_label": add_label,
-        "count": count,
+        "count": 0 if not rows else count,
     }
 
 
