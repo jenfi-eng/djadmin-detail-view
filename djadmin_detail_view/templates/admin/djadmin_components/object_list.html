@@ -5,7 +5,7 @@
     {{ object_list.panel_name }}
     <small>
       {% if object_list.obj_set_limit %}
-        <span>({{ object_list.rows|length }} of {{ object_list.obj_set.count|default:object_list.count|default:_("Many") }})</span>
+        <span>({{ object_list.rows|length }} of {{ object_list.obj_set.count|default:object_list.count }})</span>
       {% endif %}
     </small>
     <div class="float-end small">
