@@ -67,6 +67,13 @@ def table_for(
 
         rows.append(copy.deepcopy(row))
 
+    if rows:
+        count = len(obj_set) if isinstance(obj_set, list) else obj_set.count or "Many"
+    else:
+        count = 0
+
+    0 if rows else (obj_set.count or len(obj_set) or "Many")
+
     return {
         "panel_name": panel_name,
         "cols": cols,
@@ -78,7 +85,7 @@ def table_for(
         "allow_edit": allow_edit,
         "add_url": add_url,
         "add_label": add_label,
-        "count": 0 if not rows else count,
+        "count": count,
     }
 
 
