@@ -45,9 +45,11 @@ def table_for(
     actions=None,
     readonly=None,
     view_all_url=None,
+    view_all_footer_url=None,
     allow_edit=False,
     add_url=None,
     add_label=None,
+    count=None,
 ):
     rows = []
     objs = obj_set
@@ -65,16 +67,25 @@ def table_for(
 
         rows.append(copy.deepcopy(row))
 
+    if rows:
+        count = len(obj_set) if isinstance(obj_set, list) else obj_set.count or "Many"
+    else:
+        count = 0
+
+    0 if rows else (obj_set.count or len(obj_set) or "Many")
+
     return {
         "panel_name": panel_name,
         "cols": cols,
         "rows": rows,
         "view_all_url": view_all_url,
+        "view_all_footer_url": view_all_footer_url,
         "obj_set_limit": obj_set_limit,
         "obj_set": obj_set,
         "allow_edit": allow_edit,
         "add_url": add_url,
         "add_label": add_label,
+        "count": count,
     }
 
 

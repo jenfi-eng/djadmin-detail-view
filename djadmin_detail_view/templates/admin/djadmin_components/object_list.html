@@ -5,7 +5,7 @@
     {{ object_list.panel_name }}
     <small>
       {% if object_list.obj_set_limit %}
-        <span>({{ object_list.rows|length }} of {{ object_list.obj_set.count }})</span>
+        <span>({{ object_list.rows|length }} of {{ object_list.obj_set.count|default:object_list.count }})</span>
       {% endif %}
     </small>
     <div class="float-end small">
@@ -53,6 +53,13 @@
         <tr>
           <td>
             <a class="btn btn-primary" href="{{ object_list.add_url }}">{{ object_list.add_label|default:_("Add") }}</a>
+          </td>
+        </tr>
+      {% endif %}
+      {% if object_list.view_all_footer_url %}
+        <tr>
+          <td>
+            <a class="btn btn-primary" href="{{ object_list.view_all_footer_url }}">{{ _("View All") }}</a>
           </td>
         </tr>
       {% endif %}
