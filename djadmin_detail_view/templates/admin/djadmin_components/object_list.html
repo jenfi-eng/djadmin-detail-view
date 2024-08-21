@@ -56,6 +56,13 @@
           </td>
         </tr>
       {% endif %}
+      {% if object_list.view_all_footer_url %}
+        <tr>
+          <td>
+            <a class="btn btn-primary" href="{{ object_list.view_all_footer_url }}">{{ _("View All") }}</a>
+          </td>
+        </tr>
+      {% endif %}
     </tfoot>
   </table>
 </div>
