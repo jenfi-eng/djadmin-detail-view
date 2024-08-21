@@ -49,6 +49,7 @@ def table_for(
     allow_edit=False,
     add_url=None,
     add_label=None,
+    count=None,
 ):
     rows = []
     objs = obj_set
@@ -77,6 +78,7 @@ def table_for(
         "allow_edit": allow_edit,
         "add_url": add_url,
         "add_label": add_label,
+        "count": count,
     }
 
 
