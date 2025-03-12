@@ -39,7 +39,13 @@
                       margin: 0px;
                       transform: translate3d(0.5px, 53px, 0px)">
             {% for item in dropdown_menu|filter_none %}
-              <a id="dropdown-item-{{ item.label }}" class="dropdown-item{% if item.class %} {{ item.class }}{% endif %}" {% if item.is_pop_up %} up-layer="new" up-mode="modal" up-size="{{ item.pop_up_size|default:'large' }}" up-history="false" {% endif %} href="{{ item.url }}" {% if item.html_attrs %} {% for attr, value in item.html_attrs.items %}{{ attr }}="{{ value }}"{% endfor %} {% endif %} {% if item.target %}target="{{ item.target }}"{% endif %}>
+              <a id="dropdown-item-{{ item.label }}"
+                 class="dropdown-item{% if item.class %} {{ item.class }}{% endif %}"
+                 {% if item.is_pop_up %} up-layer="new" up-mode="modal" up-size="{{ item.pop_up_size|default:'large' }}" up-history="false" {% endif %}
+                 href="{{ item.url }}"
+                 {% if item.html_attrs %} {% for attr, value in item.html_attrs.items %}{{ attr }}="{{ value }}"{% endfor %}
+                 {% endif %}
+                 {% if item.target %}target="{{ item.target }}"{% endif %}>
                 <i class="dropdown-item-icon"></i>{{ item.label }}
               </a>
               {% if item.confirm %}

@@ -116,9 +116,7 @@ def fill_missing_values(obj, rows):
         elif Money is not None and isinstance(ret, Money):
             ret = humanize_money_with_currency(ret)
         elif isinstance(ret, ImageFieldFile) and ret.name and ret.url:
-            ret = format_html(
-                '<img src="{}" style="max-width: 100px; max-height: 100px;">', ret.url
-            )
+            ret = format_html('<img src="{}" style="max-width: 100px; max-height: 100px;">', ret.url)
         elif ret is None:
             ret = "-"
 

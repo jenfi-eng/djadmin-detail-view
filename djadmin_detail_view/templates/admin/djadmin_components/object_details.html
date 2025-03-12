@@ -14,9 +14,7 @@
         <tr>
           <th>
             {{ obj_detail.display_name }}
-            {% if obj_detail.help_text %}
-              <div class="ms-2 mt-1 text-muted fst-italic">{{ obj_detail.help_text }}</div>
-            {% endif %}
+            {% if obj_detail.help_text %}<div class="ms-2 mt-1 text-muted fst-italic">{{ obj_detail.help_text }}</div>{% endif %}
           </th>
           <td>
             {% is_file_field obj_detail.value_out as field_is_file %}
