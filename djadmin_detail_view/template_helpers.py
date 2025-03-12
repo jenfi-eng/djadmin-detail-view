@@ -48,7 +48,7 @@ def table_for(
     obj_set_limit=10,
     cols,
     actions=None,
-    _readonly=None,
+    readonly=None,
     view_all_url=None,
     view_all_footer_url=None,
     allow_edit=False,
