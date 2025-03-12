@@ -29,11 +29,16 @@ def details_table_for(*, obj, details, panel_name=None):
     }
 
 
-def detail(col_name, display_name=None, value: any = None):
+def detail(col_name, display_name=None, value: any = None, help_text: str = None):
     if display_name is None:
         display_name = col_name.replace("_", " ").title()
 
-    return {"col_name": col_name, "display_name": display_name, "value": value}
+    return {
+        "col_name": col_name,
+        "display_name": display_name,
+        "value": value,
+        "help_text": help_text,
+    }
 
 
 def table_for(
@@ -43,7 +48,6 @@ def table_for(
     obj_set_limit=10,
     cols,
     actions=None,
-    readonly=None,
     view_all_url=None,
     view_all_footer_url=None,
     allow_edit=False,
@@ -112,7 +116,9 @@ def fill_missing_values(obj, rows):
         elif Money is not None and isinstance(ret, Money):
             ret = humanize_money_with_currency(ret)
         elif isinstance(ret, ImageFieldFile) and ret.name and ret.url:
-            ret = format_html('<img src="{}" style="max-width: 100px; max-height: 100px;">', ret.url)
+            ret = format_html(
+                '<img src="{}" style="max-width: 100px; max-height: 100px;">', ret.url
+            )
         elif ret is None:
             ret = "-"
 
