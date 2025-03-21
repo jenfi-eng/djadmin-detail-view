@@ -29,6 +29,7 @@ django-simple-history = "^3.4.0"
 py-expect-to-change = { git = "ssh://git@github.com/jenfi-eng/py-expect-to-change.git", rev = "master" }
 playwright = "^1.50.0"
 django-sslserver = { git = "https://github.com/jenfi-eng/django-sslserver.git", rev = "master" }
+py-moneyed = "^3.0"
 
 
 [build-system]

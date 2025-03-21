@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.views.generic import DetailView
+from moneyed import Money
 from simple_history.admin import SimpleHistoryAdmin
 
 from djadmin_detail_view.mixins import AdminChangeListViewDetail, AdminDetailMixin
@@ -30,6 +31,7 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
                 detail("name"),
                 detail("address"),
                 detail("total_completed_order_amount", value=lambda x: x.total_order_value()),
+                detail("Test Money", value=Money(0, "USD")),
             ],
         )
 

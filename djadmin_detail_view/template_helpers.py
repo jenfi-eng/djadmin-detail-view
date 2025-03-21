@@ -9,13 +9,22 @@ from django.utils.html import format_html
 from djadmin_detail_view.defaults import TEMPLATE_TIME_FORMAT
 
 try:
-    # From money, Jenfi adds a humanize_money_with_currency function
-    from apps.utils.money_format import humanize_money_with_currency
     from moneyed import Money
 except ImportError:
     Money = None
 
+########################################################
+# Jenfi Specific Helpers
+########################################################
+try:
+    from apps.utils.money_format import humanize_money_with_currency
+except ImportError:
+    humanize_money_with_currency = None
+
 from .url_helpers import auto_link
+########################################################
+# /Jenfi Specific Helpers
+########################################################
 
 
 def details_table_for(*, obj, details, panel_name=None):
@@ -99,7 +108,7 @@ col = detail
 
 def fill_missing_values(obj, rows):
     for row in rows:
-        if row["value"]:
+        if _is_present(row["value"]):
             if callable(row["value"]):
                 ret = row["value"](obj)
             else:
@@ -114,7 +123,7 @@ def fill_missing_values(obj, rows):
             ret = formats.date_format(ret, TEMPLATE_TIME_FORMAT)
         elif isinstance(ret, date):
             ret = formats.date_format(ret, format="SHORT_DATE_FORMAT")
-        elif Money is not None and isinstance(ret, Money):
+        elif _is_money(ret) and humanize_money_with_currency is not None:
             ret = humanize_money_with_currency(ret)
         elif isinstance(ret, ImageFieldFile) and ret.name and ret.url:
             ret = format_html('<img src="{}" style="max-width: 100px; max-height: 100px;">', ret.url)
@@ -144,3 +153,19 @@ def _attempt_to_turn_into_link(row, orig_obj, orig_ret):
         pass
 
     return orig_ret
+
+
+def _is_present(value):
+    if value is None:
+        return False
+    if callable(value):
+        return True
+    if _is_money(value):
+        return True
+    if hasattr(value, "__len__"):  # strings, lists, dicts, etc.
+        return bool(len(value))
+    return bool(value)  # for other types
+
+
+def _is_money(value):
+    return Money is not None and isinstance(value, Money)
