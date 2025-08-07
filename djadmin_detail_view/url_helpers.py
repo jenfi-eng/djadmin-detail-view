@@ -31,7 +31,7 @@ def auto_link(obj, action, text=None, html_class=None):
     return format_html('<a href="{}">{}</a>', admin_path, text)
 
 
-def admin_path_for(obj, action="change"):
+def admin_path_for(obj, action="change", site_name="admin"):
     # Allow for passing of "application.model" strings
     if isinstance(obj, str):
         obj = _class_from_str(obj)
@@ -41,28 +41,28 @@ def admin_path_for(obj, action="change"):
             action = "changelist"
 
     if action in ["add", "changelist", "search"]:
-        return reverse(f"admin:{admin_path_name(obj, action=action)}")
+        return reverse(f"{site_name}:{admin_path_name(obj, action=action)}")
 
-    return reverse(f"admin:{admin_path_name(obj, action=action)}", args=[obj.id])
+    return reverse(f"{site_name}:{admin_path_name(obj, action=action)}", args=[obj.id])
 
 
-def admin_url_for(obj, action="change"):
+def admin_url_for(obj, action="change", site_name="admin"):
     if hosts_reverse is None:
         if action in ["add", "changelist"]:
-            return reverse(f"admin:{admin_path_name(obj, action=action)}")
+            return reverse(f"{site_name}:{admin_path_name(obj, action=action)}")
 
-        return reverse(f"admin:{admin_path_name(obj, action=action)}", args=[obj.id])
+        return reverse(f"{site_name}:{admin_path_name(obj, action=action)}", args=[obj.id])
 
     else:
         if action in ["add", "changelist"]:
             return hosts_reverse(
-                f"admin:{admin_path_name(obj, action=action)}",
+                f"{site_name}:{admin_path_name(obj, action=action)}",
                 host=HOST_NAME_FOR_ADMIN,
                 scheme="https",
             )
 
         return hosts_reverse(
-            f"admin:{admin_path_name(obj, action=action)}",
+            f"{site_name}:{admin_path_name(obj, action=action)}",
             args=[obj.id],
             host=HOST_NAME_FOR_ADMIN,
             scheme="https",
