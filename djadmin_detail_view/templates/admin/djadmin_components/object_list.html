@@ -52,14 +52,15 @@
       {% if object_list.add_url %}
         <tr>
           <td>
-            <a class="btn btn-primary" href="{{ object_list.add_url }}">{{ object_list.add_label|default:_("Add") }}</a>
+            <a class="btn btn-primary btn-sm" href="{{ object_list.add_url }}">{{ object_list.add_label|default:_("Add") }}</a>
           </td>
         </tr>
       {% endif %}
       {% if object_list.view_all_footer_url %}
         <tr>
           <td>
-            <a class="btn btn-primary" href="{{ object_list.view_all_footer_url }}">{{ _("View All") }}</a>
+            <a class="btn btn-primary btn-sm"
+               href="{{ object_list.view_all_footer_url }}">{{ _("View All") }}</a>
           </td>
         </tr>
       {% endif %}
