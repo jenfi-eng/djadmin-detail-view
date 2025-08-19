@@ -50,6 +50,21 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             ],
         )
 
+        contact_list_empty = table_for(
+            panel_name="Empty LIst",
+            obj_set=self.object.contact_set.none(),
+            cols=[
+                col("id"),
+                col("name"),
+                col("phone"),
+                col("email"),
+                col("created_at"),
+                col("updated_at"),
+                col("is_active"),
+                col("none", value=lambda x: None),
+            ],
+        )
+
         ctx["dropdown_menu"] = [
             {"label": "Visit Google", "url": "https://www.google.com", "target": "_blank", "confirm": "Go to Google?"},
         ]
@@ -65,6 +80,7 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             {
                 "row": [
                     {"col": contact_list},
+                    {"col": contact_list_empty},
                 ],
             },
         ]
