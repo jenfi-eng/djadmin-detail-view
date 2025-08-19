@@ -46,6 +46,11 @@
             {% endif %}
           </td>
         </tr>
+      {% empty %}
+        <tr>
+          <td colspan="{% if row.actions or object_list.allow_edit %}{{ object_list.cols|length|add:1 }}{% else %}{{ object_list.cols|length }}{% endif %}"
+              class="text-center text-muted">No items here.</td>
+        </tr>
       {% endfor %}
     </tbody>
     <tfoot>

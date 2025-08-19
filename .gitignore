@@ -284,3 +284,5 @@ tmp/
 import-db.sh
 
 *.sqlite3
+
+.claude/
