@@ -17,25 +17,12 @@
       <div class="col"></div>
       {% if top_menu_buttons %}
         {% for item in top_menu_buttons|filter_none %}
-          <a id="top-menu-btn-{{ item.label }}"
-             class="btn btn-sm col-auto {{ item.btn_class|default:'btn-secondary' }}{% if item.class %} {{ item.class }}{% endif %}"
-             {% if item.is_pop_up %} up-layer="new" up-mode="modal" up-size="{{ item.pop_up_size|default:'large' }}" up-history="false" {% endif %}
+          <a class="btn btn-sm col-auto me-2 {{ item.btn_class|default:'btn-secondary' }}{% if item.class %} {{ item.class }}{% endif %}"
              href="{{ item.url }}"
              {% if item.html_attrs %} {% for attr, value in item.html_attrs.items %}{{ attr }}="{{ value }}"{% endfor %}
              {% endif %}
-             {% if item.target %}target="{{ item.target }}"{% endif %}>{{ item.label }}</a>
-          {% if item.confirm %}
-            <script>
-              document.getElementById("top-menu-btn-{{ item.label }}").addEventListener("click", function(event) {
-                event.preventDefault();
-                if (confirm("{{ item.confirm }}")) {
-                  const url = new URL(event.target.href);
-                  url.searchParams.set("confirm", "1");
-                  window.location.href = url.href;
-                }
-              })
-            </script>
-          {% endif %}
+             {% if item.target %}target="{{ item.target }}"{% endif %}
+             {% if item.confirm %}data-confirm="{{ item.confirm }}"{% endif %}>{{ item.label }}</a>
         {% endfor %}
       {% endif %}
       <a class="btn btn-sm col-auto" href="{% admin_path_for object %}">{{ _("Edit") }}</a>
@@ -65,27 +52,14 @@
               {% if item.type == "divider" %}
                 <hr class="dropdown-divider" />
               {% else %}
-                <a id="dropdown-item-{{ item.label }}"
-                   class="dropdown-item{% if item.class %} {{ item.class }}{% endif %}"
-                   {% if item.is_pop_up %} up-layer="new" up-mode="modal" up-size="{{ item.pop_up_size|default:'large' }}" up-history="false" {% endif %}
+                <a class="dropdown-item{% if item.class %} {{ item.class }}{% endif %}"
                    href="{{ item.url }}"
                    {% if item.html_attrs %} {% for attr, value in item.html_attrs.items %}{{ attr }}="{{ value }}"{% endfor %}
                    {% endif %}
-                   {% if item.target %}target="{{ item.target }}"{% endif %}>
+                   {% if item.target %}target="{{ item.target }}"{% endif %}
+                   {% if item.confirm %}data-confirm="{{ item.confirm }}"{% endif %}>
                   <i class="dropdown-item-icon"></i>{{ item.label }}
                 </a>
-                {% if item.confirm %}
-                  <script>
-                    document.getElementById("dropdown-item-{{ item.label }}").addEventListener("click", function(event) {
-                      event.preventDefault();
-                      if (confirm("{{ item.confirm }}")) {
-                        const url = new URL(event.target.href);
-                        url.searchParams.set("confirm", "1");
-                        window.location.href = url.href;
-                      }
-                    })
-                  </script>
-                {% endif %}
               {% endif %}
             {% endfor %}
           </div>
@@ -96,5 +70,20 @@
     {% for item in layout %}
       {% include 'admin/djadmin_components/_auto_row_col.html' with item=item %}
     {% endfor %}
+    <script>
+      // Handle all links with data-confirm attribute
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('a[data-confirm]').forEach(function(link) {
+          link.addEventListener('click', function(event) {
+            event.preventDefault();
+            if (confirm(this.dataset.confirm)) {
+              const url = new URL(this.href);
+              url.searchParams.set('confirm', '1');
+              window.location.href = url.href;
+            }
+          });
+        });
+      });
+    </script>
   {% endwith %}
 {% endblock %}
