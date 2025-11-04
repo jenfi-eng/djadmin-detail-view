@@ -96,8 +96,6 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             dropdown_item(
                 "Export Data",
                 url=f"/admin/companies/company/{self.object.id}/change/",
-                is_pop_up=True,
-                pop_up_size="medium",
             ),
         ]
 
@@ -156,6 +154,36 @@ class ContactDetailView(AdminDetailMixin, DetailView):
                 detail("total_completed_order_amount", value=lambda x: x.total_order_value()),
             ],
         )
+
+        ctx["top_menu_buttons"] = [
+            top_menu_btn(
+                "Edit Contact",
+                url=f"/admin/companies/contact/{self.object.id}/change/",
+                btn_class="btn-primary",
+            ),
+            top_menu_btn(
+                "Delete",
+                url=f"/admin/companies/contact/{self.object.id}/delete/",
+                btn_class="btn-danger",
+                confirm="Are you sure you want to delete this contact?",
+            ),
+        ]
+
+        ctx["dropdown_menu"] = [
+            dropdown_item(
+                "View Company",
+                url=f"/admin/companies/company/{self.object.company.id}/",
+            ),
+            dropdown_item(
+                "Send Email",
+                url=f"mailto:{self.object.email}",
+                target="_blank",
+            ),
+            dropdown_item(
+                "Call Phone",
+                url=f"tel:{self.object.phone}",
+            ),
+        ]
 
         ctx["layout"] = [
             {
