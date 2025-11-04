@@ -4,7 +4,14 @@ from moneyed import Money
 from simple_history.admin import SimpleHistoryAdmin
 
 from djadmin_detail_view.mixins import AdminChangeListViewDetail, AdminDetailMixin
-from djadmin_detail_view.template_helpers import col, detail, details_table_for, table_for
+from djadmin_detail_view.template_helpers import (
+    col,
+    detail,
+    details_table_for,
+    dropdown_item,
+    table_for,
+    top_menu_btn,
+)
 from example_project.companies.models import Company, Contact
 
 
@@ -65,8 +72,33 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             ],
         )
 
+        ctx["top_menu_buttons"] = [
+            top_menu_btn(
+                "Download PDF",
+                url=f"https://www.google.com/search?q={self.object.name}",
+                btn_class="btn-primary",
+                target="_blank",
+            ),
+            top_menu_btn(
+                "Archive",
+                url=f"/admin/companies/company/{self.object.id}/delete/",
+                confirm="Are you sure you want to archive this company?",
+            ),
+        ]
+
         ctx["dropdown_menu"] = [
-            {"label": "Visit Google", "url": "https://www.google.com", "target": "_blank", "confirm": "Go to Google?"},
+            dropdown_item(
+                "Visit Google",
+                url="https://www.google.com",
+                target="_blank",
+                confirm="Go to Google?",
+            ),
+            dropdown_item(
+                "Export Data",
+                url=f"/admin/companies/company/{self.object.id}/change/",
+                is_pop_up=True,
+                pop_up_size="medium",
+            ),
         ]
 
         ctx["layout"] = [

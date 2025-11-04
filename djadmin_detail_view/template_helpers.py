@@ -169,3 +169,76 @@ def _is_present(value):
 
 def _is_money(value):
     return Money is not None and isinstance(value, Money)
+
+
+def menu_item(
+    label,
+    url,
+    *,
+    html_attrs=None,
+    target=None,
+    confirm=None,
+    css_class=None,
+):
+    """
+    Base helper to create a menu item (used by dropdown_item and top_menu_btn).
+
+    Args:
+        label: Item text
+        url: Item URL
+        html_attrs: Dict of HTML attributes to add to the element
+        target: Link target attribute
+        confirm: Confirmation message to show before navigation
+        css_class: Additional CSS classes to add
+
+    Returns:
+        Dict with menu item configuration
+    """
+    return {
+        "label": label,
+        "url": url,
+        "html_attrs": html_attrs,
+        "target": target,
+        "confirm": confirm,
+        "class": css_class,
+    }
+
+
+dropdown_item = menu_item
+
+
+def top_menu_btn(
+    label,
+    url,
+    *,
+    btn_class="btn-secondary",
+    html_attrs=None,
+    target=None,
+    confirm=None,
+    css_class=None,
+):
+    """
+    Helper to create a top menu button.
+
+    Args:
+        label: Button text
+        url: Button URL
+        btn_class: Bootstrap button class (default: 'btn-secondary')
+        html_attrs: Dict of HTML attributes to add to the element
+        target: Link target attribute
+        confirm: Confirmation message to show before navigation
+        css_class: Additional CSS classes to add
+
+    Returns:
+        Dict with button configuration
+    """
+    item = menu_item(
+        label=label,
+        url=url,
+        html_attrs=html_attrs,
+        target=target,
+        confirm=confirm,
+        css_class=css_class,
+    )
+    item["btn_class"] = btn_class
+    return item
