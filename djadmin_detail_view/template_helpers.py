@@ -207,6 +207,34 @@ def menu_item(
 dropdown_item = menu_item
 
 
+def dropdown_divider():
+    """
+    Helper to create a dropdown divider (horizontal line separator).
+
+    Returns:
+        Dict with divider configuration
+    """
+    return {
+        "type": "divider",
+    }
+
+
+def dropdown_header(label):
+    """
+    Helper to create a dropdown header (non-interactive label).
+
+    Args:
+        label: Header text to display
+
+    Returns:
+        Dict with header configuration
+    """
+    return {
+        "type": "header",
+        "label": label,
+    }
+
+
 def top_menu_btn(
     label,
     url,

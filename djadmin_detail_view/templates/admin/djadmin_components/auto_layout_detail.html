@@ -51,6 +51,8 @@
             {% for item in dropdown_menu|filter_none %}
               {% if item.type == "divider" %}
                 <hr class="dropdown-divider" />
+              {% elif item.type == "header" %}
+                <h6 class="dropdown-header">{{ item.label }}</h6>
               {% else %}
                 <a class="dropdown-item{% if item.class %} {{ item.class }}{% endif %}"
                    href="{{ item.url }}"
