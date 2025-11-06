@@ -26,7 +26,7 @@ Via DSL, it is fast to stand up `DetailView`s for many objects.
 
 ## Beliefs
 
-Information dense, grid layout. Function over form.
+Opinionated, information dense, grid layout. Function over form.
 
 ## Core API
 
@@ -131,7 +131,7 @@ The `detail()` and `col()` helpers automatically format common data types:
 
 It is currently built for Jenfi and its internal needs. Thus, it has specific requirements such as `django-hosts` and `Money` that may need to be abstracted away.
 
-PRs are welcome to make it more generally accessible.
+PRs are welcome for review to make it more generally accessible.
 
 ## VSCode
 

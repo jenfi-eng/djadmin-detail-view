@@ -17,7 +17,7 @@ try:
 except ImportError:
     Money = None
 
-from ..url_helpers import admin_path_for
+from ..url_helpers import admin_path_for, auto_link
 
 register = Library()
 
@@ -90,6 +90,46 @@ def admin_get_path_url(obj, action="change"):
 @register.simple_tag
 def admin_change_path(obj):
     return admin_path_for(obj)
+
+
+@register.simple_tag(name="auto_link")
+def admin_auto_link(obj, action="detail", text=None, html_class=None):
+    """
+    Creates an HTML link to the admin page for the given object.
+
+    Args:
+        obj: Django model instance
+        action: Admin action (default: "detail")
+        text: Link text (default: str(obj))
+        html_class: CSS class for the link
+
+    Usage in templates:
+        {% load djadmin_tags %}
+        {% auto_link company "detail" %}
+        {% auto_link company "change" "Edit Company" "btn btn-primary" %}
+    """
+    return auto_link(obj, action, text, html_class)
+
+
+@register.filter(name="try_auto_link", is_safe=True)
+def try_admin_auto_link(obj, action="change"):
+    """
+    Attempts to create an HTML link to the admin page for the given object.
+    Falls back to plain text if the link cannot be created.
+
+    Args:
+        obj: Django model instance
+        action: Admin action (default: "change")
+
+    Usage in templates:
+        {% load djadmin_tags %}
+        {{ company|try_auto_link:"detail" }}
+        {{ company|try_auto_link }}
+    """
+    try:
+        return auto_link(obj, action)
+    except Exception:
+        return str(obj)
 
 
 class CustomEncoder(DjangoJSONEncoder):

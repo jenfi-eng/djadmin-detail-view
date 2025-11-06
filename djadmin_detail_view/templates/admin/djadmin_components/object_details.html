@@ -5,7 +5,7 @@
     {% if object_details.panel_name %}
       {{ object_details.panel_name }}
     {% elif object_details.obj %}
-      {% get_obj_classname object_details.obj %}: {{ object_details.obj }}
+      {% get_obj_classname object_details.obj %}: {{ object_details.obj|try_auto_link:"detail" }}
     {% endif %}
   </div>
   <table class="table table-borderless mb-0 table-striped">
