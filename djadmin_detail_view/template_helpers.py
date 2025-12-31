@@ -27,14 +27,27 @@ from .url_helpers import auto_link
 ########################################################
 
 
-def details_table_for(*, obj, details, panel_name=None):
-    if obj:
+def _is_empty_obj(obj):
+    """Check if obj is empty (None, "", {}, [])."""
+    if obj is None:
+        return True
+    if isinstance(obj, (str, list, dict)) and len(obj) == 0:
+        return True
+    return False
+
+
+def details_table_for(*, obj, details, panel_name=None, empty_message=None):
+    is_empty = _is_empty_obj(obj)
+
+    if obj and not is_empty:
         fill_missing_values(obj, details)
 
     return {
         "panel_name": panel_name,
         "obj": obj,
         "obj_details": details,
+        "is_empty": is_empty,
+        "empty_message": empty_message,
     }
 
 
