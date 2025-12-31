@@ -4,12 +4,16 @@
   <div class="card-header">
     {% if object_details.panel_name %}
       {{ object_details.panel_name }}
-    {% elif object_details.obj %}
+    {% elif object_details.obj and not object_details.is_empty %}
       {% get_obj_classname object_details.obj %}: {{ object_details.obj|try_auto_link:"detail" }}
     {% endif %}
   </div>
-  <table class="table table-borderless mb-0 table-striped">
-    {% if object_details.obj %}
+  {% if object_details.is_empty %}
+    <div class="card-body text-center text-muted py-4">
+      <p class="mb-0">{{ object_details.empty_message|default:"No data available" }}</p>
+    </div>
+  {% elif object_details.obj %}
+    <table class="table table-borderless mb-0 table-striped">
       {% for obj_detail in object_details.obj_details %}
         <tr>
           <th>
@@ -35,10 +39,10 @@
           </td>
         </tr>
       {% endfor %}
-    {% else %}
-      <tr>
-        <td>{{ _("No details to display") }}</td>
-      </tr>
-    {% endif %}
-  </table>
+    </table>
+  {% else %}
+    <div class="card-body text-center text-muted py-4">
+      <p class="mb-0">{{ object_details.empty_message|default:"No data available" }}</p>
+    </div>
+  {% endif %}
 </div>
