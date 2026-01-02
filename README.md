@@ -31,8 +31,8 @@ Opinionated, information dense, grid layout. Function over form.
 ## Core API
 
 - Add View button to `changelist` for Object.
-- `detail_table_for()` builds object's details table.
-- `table_for()` builds a list of
+- `details_table_for()` builds object's details table.
+- `table_for()` builds a list table for related objects.
 - `ctx["layout"]` holds the grid structure.
 
 ## Pre-reqs
@@ -54,7 +54,10 @@ See `example_project/companies/admin.py` for reference.
 
 ```python
 from django.contrib import admin
-from djadmin_detail_view.views import AdminChangeListViewDetail, AdminDetailMixin
+from django.views.generic import DetailView
+
+from djadmin_detail_view.mixins import AdminChangeListViewDetail, AdminDetailMixin
+from djadmin_detail_view.template_helpers import col, detail, details_table_for, table_for
 
 from my_app.companies.models import Company
 
@@ -80,6 +83,7 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             ]
         )
 
+        # Regular table
         orders_list = table_for(
             panel_name="Orders",
             obj_set=self.object.order_set.all(),
@@ -91,14 +95,29 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             ]
         )
 
+        # Lazy-loaded table (loads via AJAX after page render)
+        large_orders_list = table_for(
+            panel_name="Large Orders",
+            obj_set=self.object.order_set.filter(total_value__gte=10000),
+            cols=[col("id"), col("total_value")],
+            lazy_load_key="large_orders",
+        )
+
         ctx["layout"] = [
             {
                 "row": [
                     {"col": company_details},
-                    {"col": None},
+                    {"col": orders_list},
+                ],
+            },
+            {
+                "row": [
+                    {"col": large_orders_list},
                 ],
             },
         ]
+
+        return ctx
 ```
 
 ## Template Helper API Reference
