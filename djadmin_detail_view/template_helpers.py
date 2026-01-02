@@ -1,3 +1,4 @@
+import contextvars
 import copy
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -11,6 +12,40 @@ from djadmin_detail_view.defaults import TEMPLATE_TIME_FORMAT
 
 from .url_helpers import auto_link
 
+# Context variable to signal which lazy panel should be force-rendered
+# When set, table_for/details_table_for with matching key returns content instead of LazyFragment
+_rendering_lazy_panel = contextvars.ContextVar("rendering_lazy_panel", default=None)
+
+# Context variable to track lazy_keys used in the current request (for duplicate detection)
+_used_lazy_keys = contextvars.ContextVar("used_lazy_keys", default=None)
+
+
+def _register_lazy_key(lazy_key: str, panel_name: str) -> None:
+    """
+    Register a lazy_key and raise an error if it's already been used.
+
+    This prevents duplicate lazy_keys on the same page, which would cause
+    the lazy endpoint to return the wrong panel content.
+    """
+    used_keys = _used_lazy_keys.get()
+    if used_keys is None:
+        used_keys = {}
+        _used_lazy_keys.set(used_keys)
+
+    if lazy_key in used_keys:
+        raise ValueError(
+            f"Duplicate lazy_key '{lazy_key}' detected. "
+            f"Panel '{panel_name}' has the same lazy_key as panel '{used_keys[lazy_key]}'. "
+            f"Each lazy-loaded panel must have a unique lazy_key."
+        )
+
+    used_keys[lazy_key] = panel_name
+
+
+def reset_lazy_key_tracking() -> None:
+    """Reset the lazy key tracking. Called at the start of each request."""
+    _used_lazy_keys.set(None)
+
 
 @dataclass
 class LazyFragment:
@@ -21,11 +56,12 @@ class LazyFragment:
     a LazyFragment is returned instead of the actual table data. The template
     detects this and renders a placeholder that loads content via AJAX.
 
-    The lazy_key corresponds to a method on the DetailView named lazy_{key}()
-    that returns the actual table data when called.
+    The lazy_key must be unique within a page. When the lazy endpoint is called,
+    the view re-runs get_context_data() with a context variable set that tells
+    table_for/details_table_for to return actual content for the matching panel.
     """
 
-    lazy_key: str
+    lazy_key: str  # User-provided unique key
     panel_name: str = ""
     placeholder: str = "Loading..."
     fragment_type: str = "table"  # "table" or "details"
@@ -73,27 +109,42 @@ def details_table_for(
     lazy_placeholder=None,
 ):
     if lazy_load:
-        if lazy_key is None:
+        if not lazy_key:
             raise ValueError("lazy_key is required when lazy_load=True")
-        return LazyFragment(
-            lazy_key=lazy_key,
-            panel_name=panel_name or "",
-            placeholder=lazy_placeholder or "Loading...",
-            fragment_type="details",
-        )
+
+        # Register the lazy_key to detect duplicates (only on initial page load)
+        if _rendering_lazy_panel.get() is None:
+            _register_lazy_key(lazy_key, panel_name or lazy_key)
+
+        # Check if we're being called from lazy endpoint for THIS panel
+        # If so, skip lazy loading and return actual content
+        if _rendering_lazy_panel.get() != lazy_key:
+            return LazyFragment(
+                lazy_key=lazy_key,
+                panel_name=panel_name or "",
+                placeholder=lazy_placeholder or "Loading...",
+                fragment_type="details",
+            )
+        # Otherwise, fall through to render actual content
 
     is_empty = _is_empty_obj(obj)
 
     if obj and not is_empty:
         fill_missing_values(obj, details)
 
-    return {
+    result = {
         "panel_name": panel_name,
         "obj": obj,
         "obj_details": details,
         "is_empty": is_empty,
         "empty_message": empty_message,
     }
+
+    # Include lazy_key in result so LazyFragmentView can find the panel
+    if lazy_load and lazy_key:
+        result["lazy_key"] = lazy_key
+
+    return result
 
 
 def detail(col_name, display_name=None, value: any = None, help_text: str = None):
@@ -127,14 +178,23 @@ def table_for(
     lazy_placeholder=None,
 ):
     if lazy_load:
-        if lazy_key is None:
+        if not lazy_key:
             raise ValueError("lazy_key is required when lazy_load=True")
-        return LazyFragment(
-            lazy_key=lazy_key,
-            panel_name=panel_name or "",
-            placeholder=lazy_placeholder or "Loading...",
-            fragment_type="table",
-        )
+
+        # Register the lazy_key to detect duplicates (only on initial page load)
+        if _rendering_lazy_panel.get() is None:
+            _register_lazy_key(lazy_key, panel_name or lazy_key)
+
+        # Check if we're being called from lazy endpoint for THIS panel
+        # If so, skip lazy loading and return actual content
+        if _rendering_lazy_panel.get() != lazy_key:
+            return LazyFragment(
+                lazy_key=lazy_key,
+                panel_name=panel_name or "",
+                placeholder=lazy_placeholder or "Loading...",
+                fragment_type="table",
+            )
+        # Otherwise, fall through to render actual content
 
     rows = []
     objs = obj_set
@@ -159,7 +219,7 @@ def table_for(
 
     0 if rows else (obj_set.count or len(obj_set) or "Many")
 
-    return {
+    result = {
         "panel_name": panel_name,
         "cols": cols,
         "rows": rows,
@@ -172,6 +232,12 @@ def table_for(
         "add_label": add_label,
         "count": count,
     }
+
+    # Include lazy_key in result so LazyFragmentView can find the panel
+    if lazy_load and lazy_key:
+        result["lazy_key"] = lazy_key
+
+    return result
 
 
 col = detail

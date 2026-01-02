@@ -127,15 +127,20 @@ class LazyFragmentView(View):
     This view is automatically registered by AdminChangeListViewDetail
     and handles AJAX requests to load table_for/details_table_for content.
 
-    The fragment_key corresponds to a method on the DetailView named
-    lazy_{fragment_key}() that returns the actual table/details data.
+    When a lazy panel is requested, this view:
+    1. Sets a context variable to signal which panel should render content
+    2. Re-runs get_context_data() on the DetailView
+    3. Finds the matching panel (now with actual content) in the layout
+    4. Returns the rendered HTML
     """
 
     admin_obj = None
     detail_view_class = None
 
     def get(self, request, pk, fragment_key):
-        # Reconstruct the detail view to access lazy methods
+        from .template_helpers import _rendering_lazy_panel
+
+        # Reconstruct the detail view
         detail_view = self.detail_view_class()
         detail_view.admin_obj = self.admin_obj
         detail_view.request = request
@@ -147,20 +152,75 @@ class LazyFragmentView(View):
         except Exception:
             raise Http404(f"Object with pk={pk} not found")
 
-        # Call the lazy_{fragment_key} method
-        method_name = f"lazy_{fragment_key}"
-        if not hasattr(detail_view, method_name):
-            raise Http404(f"Lazy fragment method '{method_name}' not found on {detail_view.__class__.__name__}")
+        # Set context variable to tell table_for/details_table_for to render
+        # actual content for this specific panel instead of LazyFragment
+        token = _rendering_lazy_panel.set(fragment_key)
+        try:
+            # Re-run get_context_data - the matching panel will now return content
+            context = detail_view.get_context_data(request, object=detail_view.object)
+        finally:
+            _rendering_lazy_panel.reset(token)
 
-        fragment_data = getattr(detail_view, method_name)()
+        # Find the matching panel in the layout
+        fragment_data = self._find_panel_in_layout(context.get("layout", []), fragment_key)
+
+        if fragment_data is None:
+            raise Http404(f"Panel with key '{fragment_key}' not found in layout")
 
         # Determine which template to use based on fragment structure
         if isinstance(fragment_data, dict) and "rows" in fragment_data:
             template = "admin/djadmin_components/object_list.html"
-            context = {"object_list": fragment_data}
+            render_context = {"object_list": fragment_data}
         else:
             template = "admin/djadmin_components/object_details.html"
-            context = {"object_details": fragment_data}
+            render_context = {"object_details": fragment_data}
 
-        html = render_to_string(template, context, request=request)
+        html = render_to_string(template, render_context, request=request)
         return HttpResponse(html)
+
+    def _find_panel_in_layout(self, layout, fragment_key):
+        """
+        Recursively search the layout for a panel matching the fragment_key.
+
+        The fragment_key is the lazy_key. We need to find the dict that was
+        returned by table_for/details_table_for (not a LazyFragment).
+        """
+        for item in layout:
+            if isinstance(item, dict):
+                # Check if this is a row with columns
+                if "row" in item:
+                    result = self._find_panel_in_row(item["row"], fragment_key)
+                    if result is not None:
+                        return result
+                # Check if this is a column
+                elif "col" in item:
+                    col_data = item["col"]
+                    if self._is_matching_panel(col_data, fragment_key):
+                        return col_data
+            elif isinstance(item, list):
+                result = self._find_panel_in_layout(item, fragment_key)
+                if result is not None:
+                    return result
+
+        return None
+
+    def _find_panel_in_row(self, row, fragment_key):
+        """Search columns in a row for matching panel."""
+        for item in row:
+            if isinstance(item, dict) and "col" in item:
+                col_data = item["col"]
+                if self._is_matching_panel(col_data, fragment_key):
+                    return col_data
+        return None
+
+    def _is_matching_panel(self, col_data, fragment_key):
+        """Check if col_data is the panel we're looking for by lazy_key."""
+        if not isinstance(col_data, dict):
+            return False
+
+        # Match by lazy_key (set when lazy_load=True and content is rendered)
+        lazy_key = col_data.get("lazy_key")
+        if lazy_key and lazy_key == fragment_key:
+            return True
+
+        return False

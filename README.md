@@ -120,30 +120,21 @@ orders_list = table_for(
     obj_set=self.object.order_set.all(),
     cols=[col("id"), col("status"), col("total")],
     lazy_load=True,
-    lazy_key="orders",
+    lazy_key="orders",  # unique identifier for this panel
     lazy_placeholder="Loading orders...",  # optional
 )
-
-# Add a method to return the actual content:
-def lazy_orders(self):
-    """Called by LazyFragmentView to render the lazy-loaded content."""
-    return table_for(
-        panel_name="Orders",
-        obj_set=self.object.order_set.all(),
-        cols=[col("id"), col("status"), col("total")],
-    )
 ```
 
 **Parameters:**
 - `lazy_load=True` - Enable lazy loading for this panel
-- `lazy_key` - Unique identifier for this panel (required when `lazy_load=True`)
+- `lazy_key` - Unique identifier for this panel (required when `lazy_load=True`). Must be unique within the page - duplicate keys will raise an error.
 - `lazy_placeholder` - Custom loading message (default: "Loading...")
 
 **How it works:**
-1. The panel renders with a Bootstrap spinner placeholder
-2. A Stimulus controller fetches content from `/admin/app/model/{pk}/lazy/{lazy_key}/`
-3. The endpoint calls your `lazy_{key}()` method and returns the rendered HTML
-4. The placeholder is replaced with the actual content
+1. On initial page load, the panel renders with a Bootstrap spinner placeholder
+2. A Stimulus controller fetches content from the lazy endpoint
+3. The system automatically re-runs `get_context_data()` with a flag that tells this specific panel to render its actual content
+4. The placeholder is replaced with the loaded content
 
 **Error handling:**
 - Non-2xx responses display an error message with status code

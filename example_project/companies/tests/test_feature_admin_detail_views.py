@@ -136,6 +136,8 @@ class TestAdminDetailView(UseRealWebpackmixin, BrowserSslLiveServerTestCase):
             timeout=10000,
         )
 
+        page.pause()
+
         # Verify the table has content - there should be a count indicator "(5 of 5)"
         # showing the contacts have been loaded
         page.wait_for_selector('text="(5 of 5)"', timeout=5000)
