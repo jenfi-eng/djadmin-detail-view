@@ -1,0 +1,16 @@
+{% load djadmin_tags %}
+
+{# Placeholder template for lazy-loaded panels #}
+<div class="card mb-5"
+     data-controller="lazy-panel"
+     data-lazy-panel-url-value="{{ lazy_url }}">
+  <div class="card-header">{{ fragment.panel_name }}</div>
+  <div class="card-body text-center py-5" data-lazy-panel-target="body">
+    <div data-lazy-panel-target="spinner">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted mb-0">{{ fragment.placeholder }}</p>
+    </div>
+  </div>
+</div>

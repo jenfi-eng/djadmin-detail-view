@@ -113,3 +113,47 @@ class TestAdminDetailView(UseRealWebpackmixin, BrowserSslLiveServerTestCase):
 
         # Should still be on the detail page
         assert page.is_visible(f"text={contact.name}")
+
+    def test_lazy_loading_panel(self):
+        """Test that lazy-loaded panels load content via AJAX"""
+        page = self.page
+
+        # Navigate to company detail view
+        page.wait_for_selector("text=Companys").click()
+        page.wait_for_selector('text="View"').click()
+
+        # Verify the lazy loading header section exists
+        page.wait_for_selector("text=Lazy Loaded Section")
+
+        # The panel should show "Lazy Loaded Contacts" header initially
+        page.wait_for_selector("text=Lazy Loaded Contacts")
+
+        # Wait for the lazy-loaded table to appear (the table inside the object-list card)
+        # This indicates the content has been fetched and the spinner replaced
+        # The loaded panel will have the "object-list" class
+        page.wait_for_selector(
+            '.object-list:has-text("Lazy Loaded Contacts")',
+            timeout=10000,
+        )
+
+        page.pause()
+
+        # Verify the table has content - there should be a count indicator "(5 of 5)"
+        # showing the contacts have been loaded
+        page.wait_for_selector('text="(5 of 5)"', timeout=5000)
+
+    def test_lazy_loading_shows_spinner_initially(self):
+        """Test that lazy-loaded panels show a spinner before content loads"""
+        page = self.page
+
+        # Navigate to company detail view
+        page.wait_for_selector("text=Companys").click()
+        page.wait_for_selector('text="View"').click()
+
+        # The lazy panel should have a spinner element (it may disappear quickly)
+        # We check that the data-controller attribute exists
+        page.wait_for_selector('[data-controller="lazy-panel"]')
+
+        # Wait for content to eventually load
+        contact = self.company.contact_set.first()
+        page.wait_for_selector(f"text={contact.name}", timeout=10000)

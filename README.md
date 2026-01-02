@@ -31,8 +31,8 @@ Opinionated, information dense, grid layout. Function over form.
 ## Core API
 
 - Add View button to `changelist` for Object.
-- `detail_table_for()` builds object's details table.
-- `table_for()` builds a list of
+- `details_table_for()` builds object's details table.
+- `table_for()` builds a list table for related objects.
 - `ctx["layout"]` holds the grid structure.
 
 ## Pre-reqs
@@ -54,7 +54,10 @@ See `example_project/companies/admin.py` for reference.
 
 ```python
 from django.contrib import admin
-from djadmin_detail_view.views import AdminChangeListViewDetail, AdminDetailMixin
+from django.views.generic import DetailView
+
+from djadmin_detail_view.mixins import AdminChangeListViewDetail, AdminDetailMixin
+from djadmin_detail_view.template_helpers import col, detail, details_table_for, table_for
 
 from my_app.companies.models import Company
 
@@ -80,6 +83,7 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             ]
         )
 
+        # Regular table
         orders_list = table_for(
             panel_name="Orders",
             obj_set=self.object.order_set.all(),
@@ -91,14 +95,29 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             ]
         )
 
+        # Lazy-loaded table (loads via AJAX after page render)
+        large_orders_list = table_for(
+            panel_name="Large Orders",
+            obj_set=self.object.order_set.filter(total_value__gte=10000),
+            cols=[col("id"), col("total_value")],
+            lazy_load_key="large_orders",
+        )
+
         ctx["layout"] = [
             {
                 "row": [
                     {"col": company_details},
-                    {"col": None},
+                    {"col": orders_list},
+                ],
+            },
+            {
+                "row": [
+                    {"col": large_orders_list},
                 ],
             },
         ]
+
+        return ctx
 ```
 
 ## Template Helper API Reference
@@ -108,6 +127,36 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
 - `details_table_for()` - Creates a detail table for displaying attributes of a single object
 - `detail()` - Defines a single detail/column in a details table (alias: `col()`)
 - `table_for()` - Creates a list table for displaying multiple related objects
+
+### Lazy Loading
+
+Both `table_for()` and `details_table_for()` support lazy loading to improve initial page load times. When enabled, panels display a spinner and load content via AJAX after the page renders.
+
+```python
+# In get_context_data():
+orders_list = table_for(
+    panel_name="Orders",
+    obj_set=self.object.order_set.all(),
+    cols=[col("id"), col("status"), col("total")],
+    lazy_load_key="orders",  # enables lazy loading with this unique key
+    lazy_placeholder="Loading orders...",  # optional
+)
+```
+
+**Parameters:**
+- `lazy_load_key` - Unique identifier that enables lazy loading for this panel. Must be unique within the page - duplicate keys will raise an error.
+- `lazy_placeholder` - Custom loading message (default: "Loading...")
+
+**How it works:**
+1. On initial page load, the panel renders with a Bootstrap spinner placeholder
+2. A Stimulus controller fetches content from the lazy endpoint
+3. The system automatically re-runs `get_context_data()` with a flag that tells this specific panel to render its actual content
+4. The placeholder is replaced with the loaded content
+
+**Error handling:**
+- Non-2xx responses display an error message with status code
+- Network errors retry automatically (up to 3 times with exponential backoff)
+- A "Retry" button allows manual retry after failures
 
 ### Menu Helpers
 

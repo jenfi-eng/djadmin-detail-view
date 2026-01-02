@@ -72,6 +72,14 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             ],
         )
 
+        # Lazy-loaded contact list
+        contact_list_lazy = table_for(
+            panel_name="Lazy Loaded Contacts",
+            obj_set=self.object.contact_set.all(),
+            cols=[col("id"), col("name"), col("email")],
+            lazy_load_key="lazy_contacts",
+        )
+
         ctx["top_menu_buttons"] = [
             top_menu_btn(
                 "Download PDF",
@@ -111,6 +119,12 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
                 "row": [
                     {"col": contact_list},
                     {"col": contact_list_empty},
+                ],
+            },
+            {"header": "Lazy Loaded Section"},
+            {
+                "row": [
+                    {"col": contact_list_lazy},
                 ],
             },
         ]
