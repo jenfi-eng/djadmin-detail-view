@@ -79,3 +79,24 @@ def admin_path_name(klass, action="change"):
 def _class_from_str(obj):
     app_label, model_name = obj.split(".")
     return apps.get_model(app_label, model_name)
+
+
+def admin_lazy_path_for(obj, fragment_key, site_name="admin"):
+    """
+    Generate URL for lazy loading a fragment.
+
+    Args:
+        obj: Model instance
+        fragment_key: The lazy_key used in table_for/details_table_for
+        site_name: Admin site name (default: "admin")
+
+    Returns:
+        URL path for the lazy fragment endpoint
+    """
+    app_label = obj._meta.app_label
+    model_name = obj._meta.model_name
+
+    return reverse(
+        f"{site_name}:{app_label}_{model_name}_lazy_fragment",
+        kwargs={"pk": obj.pk, "fragment_key": fragment_key},
+    )

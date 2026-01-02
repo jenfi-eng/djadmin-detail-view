@@ -11,13 +11,14 @@ from django.template.loader import get_template
 from django.urls import NoReverseMatch
 
 from djadmin_detail_view.defaults import EXCLUDE_BOOTSTRAP_TAGS
+from djadmin_detail_view.template_helpers import LazyFragment
 
 try:
     from moneyed import Money
 except ImportError:
     Money = None
 
-from ..url_helpers import admin_path_for, auto_link
+from ..url_helpers import admin_lazy_path_for, admin_path_for, auto_link
 
 register = Library()
 
@@ -170,3 +171,24 @@ def include_dynamic_with(context, template_name, args_dict):
     new_context.update(args_dict)
     # Render the template with the new context
     return template_obj.render(new_context)
+
+
+@register.filter
+def is_lazy_fragment(value):
+    """Check if value is a LazyFragment (lazy-loaded panel)."""
+    return isinstance(value, LazyFragment)
+
+
+@register.simple_tag
+def get_lazy_url(obj, fragment):
+    """
+    Generate URL for lazy loading a fragment.
+
+    Args:
+        obj: The model instance being displayed
+        fragment: The LazyFragment object
+
+    Usage in templates:
+        {% get_lazy_url object fragment as lazy_url %}
+    """
+    return admin_lazy_path_for(obj, fragment.lazy_key)

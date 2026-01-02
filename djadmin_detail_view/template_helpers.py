@@ -1,4 +1,5 @@
 import copy
+from dataclasses import dataclass
 from datetime import date, datetime
 from operator import attrgetter
 
@@ -7,6 +8,32 @@ from django.utils import formats, timezone
 from django.utils.html import format_html
 
 from djadmin_detail_view.defaults import TEMPLATE_TIME_FORMAT
+
+from .url_helpers import auto_link
+
+
+@dataclass
+class LazyFragment:
+    """
+    Marker for lazy-loaded content.
+
+    When table_for() or details_table_for() is called with lazy_load=True,
+    a LazyFragment is returned instead of the actual table data. The template
+    detects this and renders a placeholder that loads content via AJAX.
+
+    The lazy_key corresponds to a method on the DetailView named lazy_{key}()
+    that returns the actual table data when called.
+    """
+
+    lazy_key: str
+    panel_name: str = ""
+    placeholder: str = "Loading..."
+    fragment_type: str = "table"  # "table" or "details"
+
+    @property
+    def is_lazy(self) -> bool:
+        return True
+
 
 try:
     from moneyed import Money
@@ -21,7 +48,6 @@ try:
 except ImportError:
     humanize_money_with_currency = None
 
-from .url_helpers import auto_link
 ########################################################
 # /Jenfi Specific Helpers
 ########################################################
@@ -36,7 +62,26 @@ def _is_empty_obj(obj):
     return False
 
 
-def details_table_for(*, obj, details, panel_name=None, empty_message=None):
+def details_table_for(
+    *,
+    obj,
+    details,
+    panel_name=None,
+    empty_message=None,
+    lazy_load=False,
+    lazy_key=None,
+    lazy_placeholder=None,
+):
+    if lazy_load:
+        if lazy_key is None:
+            raise ValueError("lazy_key is required when lazy_load=True")
+        return LazyFragment(
+            lazy_key=lazy_key,
+            panel_name=panel_name or "",
+            placeholder=lazy_placeholder or "Loading...",
+            fragment_type="details",
+        )
+
     is_empty = _is_empty_obj(obj)
 
     if obj and not is_empty:
@@ -77,7 +122,20 @@ def table_for(
     add_url=None,
     add_label=None,
     count=None,
+    lazy_load=False,
+    lazy_key=None,
+    lazy_placeholder=None,
 ):
+    if lazy_load:
+        if lazy_key is None:
+            raise ValueError("lazy_key is required when lazy_load=True")
+        return LazyFragment(
+            lazy_key=lazy_key,
+            panel_name=panel_name or "",
+            placeholder=lazy_placeholder or "Loading...",
+            fragment_type="table",
+        )
+
     rows = []
     objs = obj_set
 
