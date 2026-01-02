@@ -119,15 +119,13 @@ orders_list = table_for(
     panel_name="Orders",
     obj_set=self.object.order_set.all(),
     cols=[col("id"), col("status"), col("total")],
-    lazy_load=True,
-    lazy_key="orders",  # unique identifier for this panel
+    lazy_load_key="orders",  # enables lazy loading with this unique key
     lazy_placeholder="Loading orders...",  # optional
 )
 ```
 
 **Parameters:**
-- `lazy_load=True` - Enable lazy loading for this panel
-- `lazy_key` - Unique identifier for this panel (required when `lazy_load=True`). Must be unique within the page - duplicate keys will raise an error.
+- `lazy_load_key` - Unique identifier that enables lazy loading for this panel. Must be unique within the page - duplicate keys will raise an error.
 - `lazy_placeholder` - Custom loading message (default: "Loading...")
 
 **How it works:**

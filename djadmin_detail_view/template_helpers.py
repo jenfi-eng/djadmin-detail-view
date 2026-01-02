@@ -104,23 +104,19 @@ def details_table_for(
     details,
     panel_name=None,
     empty_message=None,
-    lazy_load=False,
-    lazy_key=None,
+    lazy_load_key=None,
     lazy_placeholder=None,
 ):
-    if lazy_load:
-        if not lazy_key:
-            raise ValueError("lazy_key is required when lazy_load=True")
-
-        # Register the lazy_key to detect duplicates (only on initial page load)
+    if lazy_load_key:
+        # Register the lazy_load_key to detect duplicates (only on initial page load)
         if _rendering_lazy_panel.get() is None:
-            _register_lazy_key(lazy_key, panel_name or lazy_key)
+            _register_lazy_key(lazy_load_key, panel_name or lazy_load_key)
 
         # Check if we're being called from lazy endpoint for THIS panel
         # If so, skip lazy loading and return actual content
-        if _rendering_lazy_panel.get() != lazy_key:
+        if _rendering_lazy_panel.get() != lazy_load_key:
             return LazyFragment(
-                lazy_key=lazy_key,
+                lazy_key=lazy_load_key,
                 panel_name=panel_name or "",
                 placeholder=lazy_placeholder or "Loading...",
                 fragment_type="details",
@@ -141,8 +137,8 @@ def details_table_for(
     }
 
     # Include lazy_key in result so LazyFragmentView can find the panel
-    if lazy_load and lazy_key:
-        result["lazy_key"] = lazy_key
+    if lazy_load_key:
+        result["lazy_key"] = lazy_load_key
 
     return result
 
@@ -173,23 +169,19 @@ def table_for(
     add_url=None,
     add_label=None,
     count=None,
-    lazy_load=False,
-    lazy_key=None,
+    lazy_load_key=None,
     lazy_placeholder=None,
 ):
-    if lazy_load:
-        if not lazy_key:
-            raise ValueError("lazy_key is required when lazy_load=True")
-
-        # Register the lazy_key to detect duplicates (only on initial page load)
+    if lazy_load_key:
+        # Register the lazy_load_key to detect duplicates (only on initial page load)
         if _rendering_lazy_panel.get() is None:
-            _register_lazy_key(lazy_key, panel_name or lazy_key)
+            _register_lazy_key(lazy_load_key, panel_name or lazy_load_key)
 
         # Check if we're being called from lazy endpoint for THIS panel
         # If so, skip lazy loading and return actual content
-        if _rendering_lazy_panel.get() != lazy_key:
+        if _rendering_lazy_panel.get() != lazy_load_key:
             return LazyFragment(
-                lazy_key=lazy_key,
+                lazy_key=lazy_load_key,
                 panel_name=panel_name or "",
                 placeholder=lazy_placeholder or "Loading...",
                 fragment_type="table",
@@ -234,8 +226,8 @@ def table_for(
     }
 
     # Include lazy_key in result so LazyFragmentView can find the panel
-    if lazy_load and lazy_key:
-        result["lazy_key"] = lazy_key
+    if lazy_load_key:
+        result["lazy_key"] = lazy_load_key
 
     return result
 

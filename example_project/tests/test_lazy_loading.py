@@ -39,7 +39,7 @@ class TestLazyFragment(TestCase):
 
 
 class TestTableForLazyLoad(TestCase):
-    """Test table_for with lazy_load parameter."""
+    """Test table_for with lazy_load_key parameter."""
 
     def setUp(self):
         reset_lazy_key_tracking()
@@ -65,63 +65,50 @@ class TestTableForLazyLoad(TestCase):
         assert "rows" in result
         assert result["panel_name"] == "Contacts"
 
-    def test_table_for_with_lazy_load(self):
+    def test_table_for_with_lazy_load_key(self):
         result = table_for(
             panel_name="Contacts",
             obj_set=self.company.contact_set.all(),
             cols=[col("id"), col("name")],
-            lazy_load=True,
-            lazy_key="contacts",
+            lazy_load_key="contacts",
         )
         assert isinstance(result, LazyFragment)
         assert result.lazy_key == "contacts"
         assert result.panel_name == "Contacts"
         assert result.fragment_type == "table"
 
-    def test_table_for_lazy_load_requires_lazy_key(self):
-        with pytest.raises(ValueError, match="lazy_key is required"):
-            table_for(
-                panel_name="Contacts",
-                obj_set=self.company.contact_set.all(),
-                cols=[col("id")],
-                lazy_load=True,
-            )
-
     def test_table_for_lazy_load_with_custom_placeholder(self):
         result = table_for(
             panel_name="Contacts",
             obj_set=self.company.contact_set.all(),
             cols=[col("id")],
-            lazy_load=True,
-            lazy_key="contacts",
+            lazy_load_key="contacts",
             lazy_placeholder="Fetching contact data...",
         )
         assert result.placeholder == "Fetching contact data..."
 
-    def test_table_for_duplicate_lazy_key_raises_error(self):
-        """Test that duplicate lazy_keys raise an error."""
+    def test_table_for_duplicate_lazy_load_key_raises_error(self):
+        """Test that duplicate lazy_load_keys raise an error."""
         # First call should succeed
         table_for(
             panel_name="Contacts",
             obj_set=self.company.contact_set.all(),
             cols=[col("id")],
-            lazy_load=True,
-            lazy_key="contacts",
+            lazy_load_key="contacts",
         )
 
-        # Second call with same lazy_key should fail
+        # Second call with same lazy_load_key should fail
         with pytest.raises(ValueError, match="Duplicate lazy_key 'contacts' detected"):
             table_for(
                 panel_name="Other Contacts",
                 obj_set=self.company.contact_set.all(),
                 cols=[col("id")],
-                lazy_load=True,
-                lazy_key="contacts",
+                lazy_load_key="contacts",
             )
 
 
 class TestDetailsTableForLazyLoad(TestCase):
-    """Test details_table_for with lazy_load parameter."""
+    """Test details_table_for with lazy_load_key parameter."""
 
     def setUp(self):
         reset_lazy_key_tracking()
@@ -147,47 +134,35 @@ class TestDetailsTableForLazyLoad(TestCase):
         assert "obj" in result
         assert result["panel_name"] == "Company Details"
 
-    def test_details_table_for_with_lazy_load(self):
+    def test_details_table_for_with_lazy_load_key(self):
         result = details_table_for(
             panel_name="Company Details",
             obj=self.company,
             details=[detail("id"), detail("name")],
-            lazy_load=True,
-            lazy_key="company_details",
+            lazy_load_key="company_details",
         )
         assert isinstance(result, LazyFragment)
         assert result.lazy_key == "company_details"
         assert result.panel_name == "Company Details"
         assert result.fragment_type == "details"
 
-    def test_details_table_for_lazy_load_requires_lazy_key(self):
-        with pytest.raises(ValueError, match="lazy_key is required"):
-            details_table_for(
-                panel_name="Company Details",
-                obj=self.company,
-                details=[detail("id")],
-                lazy_load=True,
-            )
-
-    def test_details_table_for_duplicate_lazy_key_raises_error(self):
-        """Test that duplicate lazy_keys raise an error."""
+    def test_details_table_for_duplicate_lazy_load_key_raises_error(self):
+        """Test that duplicate lazy_load_keys raise an error."""
         # First call should succeed
         details_table_for(
             panel_name="Company Details",
             obj=self.company,
             details=[detail("id")],
-            lazy_load=True,
-            lazy_key="company",
+            lazy_load_key="company",
         )
 
-        # Second call with same lazy_key should fail
+        # Second call with same lazy_load_key should fail
         with pytest.raises(ValueError, match="Duplicate lazy_key 'company' detected"):
             details_table_for(
                 panel_name="Other Details",
                 obj=self.company,
                 details=[detail("name")],
-                lazy_load=True,
-                lazy_key="company",
+                lazy_load_key="company",
             )
 
 

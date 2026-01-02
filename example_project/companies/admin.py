@@ -77,8 +77,7 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             panel_name="Lazy Loaded Contacts",
             obj_set=self.object.contact_set.all(),
             cols=[col("id"), col("name"), col("email")],
-            lazy_load=True,
-            lazy_key="lazy_contacts",
+            lazy_load_key="lazy_contacts",
         )
 
         ctx["top_menu_buttons"] = [
