@@ -72,6 +72,15 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
             ],
         )
 
+        # Lazy-loaded contact list for testing lazy loading functionality
+        contact_list_lazy = table_for(
+            panel_name="Lazy Loaded Contacts",
+            obj_set=self.object.contact_set.all(),
+            cols=[col("id"), col("name"), col("email")],
+            lazy_load=True,
+            lazy_key="contacts_lazy",
+        )
+
         ctx["top_menu_buttons"] = [
             top_menu_btn(
                 "Download PDF",
@@ -113,9 +122,23 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
                     {"col": contact_list_empty},
                 ],
             },
+            {"header": "Lazy Loaded Section"},
+            {
+                "row": [
+                    {"col": contact_list_lazy},
+                ],
+            },
         ]
 
         return ctx
+
+    def lazy_contacts_lazy(self):
+        """Method called by LazyFragmentView to render the lazy-loaded contacts."""
+        return table_for(
+            panel_name="Lazy Loaded Contacts",
+            obj_set=self.object.contact_set.all(),
+            cols=[col("id"), col("name"), col("email")],
+        )
 
 
 @admin.register(Contact)
