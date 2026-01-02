@@ -109,6 +109,47 @@ class CompanyDetailView(AdminDetailMixin, DetailView):
 - `detail()` - Defines a single detail/column in a details table (alias: `col()`)
 - `table_for()` - Creates a list table for displaying multiple related objects
 
+### Lazy Loading
+
+Both `table_for()` and `details_table_for()` support lazy loading to improve initial page load times. When enabled, panels display a spinner and load content via AJAX after the page renders.
+
+```python
+# In get_context_data():
+orders_list = table_for(
+    panel_name="Orders",
+    obj_set=self.object.order_set.all(),
+    cols=[col("id"), col("status"), col("total")],
+    lazy_load=True,
+    lazy_key="orders",
+    lazy_placeholder="Loading orders...",  # optional
+)
+
+# Add a method to return the actual content:
+def lazy_orders(self):
+    """Called by LazyFragmentView to render the lazy-loaded content."""
+    return table_for(
+        panel_name="Orders",
+        obj_set=self.object.order_set.all(),
+        cols=[col("id"), col("status"), col("total")],
+    )
+```
+
+**Parameters:**
+- `lazy_load=True` - Enable lazy loading for this panel
+- `lazy_key` - Unique identifier for this panel (required when `lazy_load=True`)
+- `lazy_placeholder` - Custom loading message (default: "Loading...")
+
+**How it works:**
+1. The panel renders with a Bootstrap spinner placeholder
+2. A Stimulus controller fetches content from `/admin/app/model/{pk}/lazy/{lazy_key}/`
+3. The endpoint calls your `lazy_{key}()` method and returns the rendered HTML
+4. The placeholder is replaced with the actual content
+
+**Error handling:**
+- Non-2xx responses display an error message with status code
+- Network errors retry automatically (up to 3 times with exponential backoff)
+- A "Retry" button allows manual retry after failures
+
 ### Menu Helpers
 
 - `top_menu_btn()` - Creates a button for the top menu bar
