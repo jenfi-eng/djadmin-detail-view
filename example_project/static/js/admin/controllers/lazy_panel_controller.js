@@ -6,28 +6,66 @@ import { Controller } from '@hotwired/stimulus'
  * Usage:
  * <div data-controller="lazy-panel"
  *      data-lazy-panel-url-value="/admin/app/model/1/lazy/fragment_key/">
- *   <div class="card-header">Panel Name</div>
- *   <div class="card-body" data-lazy-panel-target="body">
- *     <div data-lazy-panel-target="spinner">...</div>
+ *   <div data-lazy-panel-target="content">
+ *     <div class="card">
+ *       <div class="card-header">Panel Name</div>
+ *       <div class="card-body" data-lazy-panel-target="body">
+ *         <div data-lazy-panel-target="spinner">...</div>
+ *       </div>
+ *     </div>
  *   </div>
  * </div>
  *
  * The controller will:
  * 1. On connect, show spinner and fetch content from the URL
- * 2. On success, replace the entire element with the response
+ * 2. On success, replace the content target's innerHTML with the response
  * 3. On error, display error message in the card body with retry option
+ *
+ * The outer wrapper (with data-controller) persists for future features like refresh.
  */
 export default class extends Controller {
-  static targets = ['body', 'spinner']
+  static targets = ['content', 'body', 'spinner']
 
   static values = {
     url: String,
     retryCount: { type: Number, default: 0 },
     maxRetries: { type: Number, default: 3 },
+    loaded: { type: Boolean, default: false },
   }
 
   connect() {
     this.load()
+  }
+
+  /**
+   * Refresh the panel content. Can be called externally or via data-action.
+   */
+  refresh() {
+    this.retryCountValue = 0
+    this.loadedValue = false
+    this.restoreSpinner()
+    this.load()
+  }
+
+  /**
+   * Restore the spinner in the content area for refresh/retry operations.
+   */
+  restoreSpinner() {
+    if (this.hasContentTarget) {
+      this.contentTarget.innerHTML = `
+        <div class="card mb-5">
+          <div class="card-header">Loading...</div>
+          <div class="card-body text-center py-5" data-lazy-panel-target="body">
+            <div data-lazy-panel-target="spinner">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted mb-0">Loading...</p>
+            </div>
+          </div>
+        </div>
+      `
+    }
   }
 
   showSpinner() {
@@ -69,7 +107,7 @@ export default class extends Controller {
     // Reset retry count and reload
     this.retryCountValue = 0
 
-    // Restore spinner in body
+    // Restore spinner in body target (when retrying from error state)
     if (this.hasBodyTarget) {
       this.bodyTarget.innerHTML = `
         <div class="text-center py-5" data-lazy-panel-target="spinner">
@@ -104,8 +142,14 @@ export default class extends Controller {
 
       const html = await response.text()
 
-      // Success - replace entire element with response
-      this.element.outerHTML = html
+      // Success - replace content target's innerHTML (preserving outer wrapper)
+      if (this.hasContentTarget) {
+        this.contentTarget.innerHTML = html
+      } else {
+        // Fallback: replace element's innerHTML if no content target
+        this.element.innerHTML = html
+      }
+      this.loadedValue = true
     } catch (error) {
       console.error('Lazy panel load failed:', error)
 
