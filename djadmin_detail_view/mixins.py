@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404, HttpResponse
 from django.template.loader import render_to_string
 from django.urls import path
@@ -84,9 +85,23 @@ class AdminDetailMixin:
     admin_obj = None
 
     def get(self, request, *args, **kwargs):
+        self._validate_admin_obj()
         self.object = self.get_object()
         context = self.get_context_data(request, *args, object=self.object, **kwargs)
         return self.render_to_response(context)
+
+    def _validate_admin_obj(self):
+        if self.admin_obj is None:
+            raise ImproperlyConfigured(
+                f"{self.__class__.__name__} requires 'admin_obj' to be set. "
+                "Use AdminChangeListViewDetail on your ModelAdmin and call "
+                "DetailView.as_view(admin_obj=self) when registering the URL."
+            )
+        if not isinstance(self.admin_obj, AdminChangeListViewDetail):
+            raise ImproperlyConfigured(
+                f"{self.__class__.__name__} requires the ModelAdmin to use "
+                f"AdminChangeListViewDetail mixin. Got {self.admin_obj.__class__.__name__} instead."
+            )
 
     def get_context_data(self, request, *args, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -1,8 +1,11 @@
 import pytest
 from django.contrib.auth.models import User
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
+from django.views.generic import DetailView
 
 from djadmin_detail_view import (
+    AdminDetailMixin,
     LazyFragment,
     col,
     detail,
@@ -205,3 +208,45 @@ class TestLazyLoadIntegration(TestCase):
         # Note: Skipping this test as it triggers Money formatting issues
         # unrelated to lazy loading. The core lazy loading tests pass.
         pass
+
+
+class TestAdminDetailMixinValidation(TestCase):
+    """Test that AdminDetailMixin validates proper configuration."""
+
+    def setUp(self):
+        self.company = Company.objects.create(
+            name="Test Company",
+            address="123 Test St",
+            phone="555-1234",
+            email="test@test.com",
+            website="https://test.com",
+            description="A test company",
+        )
+
+    def test_raises_error_when_admin_obj_is_none(self):
+        """Test that ImproperlyConfigured is raised when admin_obj is None."""
+
+        class TestDetailView(AdminDetailMixin, DetailView):
+            model = Company
+
+        view = TestDetailView()
+        view.kwargs = {"pk": self.company.pk}
+
+        with pytest.raises(ImproperlyConfigured, match="requires 'admin_obj' to be set"):
+            view._validate_admin_obj()
+
+    def test_raises_error_when_admin_obj_not_adminchangelistviewdetail(self):
+        """Test that ImproperlyConfigured is raised when admin_obj is wrong type."""
+
+        class FakeAdmin:
+            pass
+
+        class TestDetailView(AdminDetailMixin, DetailView):
+            model = Company
+
+        view = TestDetailView()
+        view.admin_obj = FakeAdmin()
+        view.kwargs = {"pk": self.company.pk}
+
+        with pytest.raises(ImproperlyConfigured, match="requires the ModelAdmin to use AdminChangeListViewDetail"):
+            view._validate_admin_obj()
