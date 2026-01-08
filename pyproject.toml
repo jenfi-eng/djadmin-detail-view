@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "djadmin-detail-view"
-version = "0.4.0"
+version = "0.4.1"
 description = ""
 authors = ["Justin Louie <224840+nitsujri@users.noreply.github.com>"]
 readme = "README.md"

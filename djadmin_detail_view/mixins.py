@@ -161,11 +161,15 @@ class LazyFragmentView(View):
         finally:
             _rendering_lazy_panel.reset(token)
 
-        # Find the matching panel in the layout
+        # Find the matching panel - first in layout, then in context directly
         fragment_data = self._find_panel_in_layout(context.get("layout", []), fragment_key)
 
         if fragment_data is None:
-            raise Http404(f"Panel with key '{fragment_key}' not found in layout")
+            # Panel might be in context but not in layout (e.g., rendered via partial template)
+            fragment_data = self._find_panel_in_context(context, fragment_key)
+
+        if fragment_data is None:
+            raise Http404(f"Panel with key '{fragment_key}' not found in layout or context")
 
         # Determine which template to use based on fragment structure
         if isinstance(fragment_data, dict) and "rows" in fragment_data:
@@ -224,3 +228,17 @@ class LazyFragmentView(View):
             return True
 
         return False
+
+    def _find_panel_in_context(self, context, fragment_key):
+        """
+        Search context values directly for a panel matching the fragment_key.
+
+        This handles cases where panels are rendered via partial templates
+        or with_args, rather than being directly in the layout structure.
+        """
+        for key, value in context.items():
+            if isinstance(value, dict):
+                lazy_key = value.get("lazy_key")
+                if lazy_key and lazy_key == fragment_key:
+                    return value
+        return None
