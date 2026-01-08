@@ -59,6 +59,9 @@ class LazyFragment:
     The lazy_key must be unique within a page. When the lazy endpoint is called,
     the view re-runs get_context_data() with a context variable set that tells
     table_for/details_table_for to return actual content for the matching panel.
+
+    If LAZY_LOADING_ENABLED is False, is_lazy returns False and is_disabled_warning
+    returns True, allowing templates to show a warning instead of attempting AJAX loads.
     """
 
     lazy_key: str  # User-provided unique key
@@ -68,7 +71,18 @@ class LazyFragment:
 
     @property
     def is_lazy(self) -> bool:
-        return True
+        """Returns True only if lazy loading is enabled globally."""
+        return LAZY_LOADING_ENABLED
+
+    @property
+    def is_disabled_warning(self) -> bool:
+        """Returns True when lazy loading is disabled but LazyFragment was instantiated.
+
+        This indicates a code path that bypasses the LAZY_LOADING_ENABLED check
+        in table_for()/details_table_for() by directly instantiating LazyFragment.
+        Templates should show a warning in this case.
+        """
+        return not LAZY_LOADING_ENABLED
 
 
 try:

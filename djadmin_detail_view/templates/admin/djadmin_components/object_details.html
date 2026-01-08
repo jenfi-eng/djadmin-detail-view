@@ -1,24 +1,38 @@
 {% load djadmin_tags %}
 
 {% if object_details|is_lazy_fragment %}
-  {# Render lazy loading placeholder with persistent outer wrapper #}
-  {% get_lazy_url object object_details as lazy_url %}
-  <div data-controller="lazy-panel"
-       data-lazy-panel-url-value="{{ lazy_url }}">
-    <div data-lazy-panel-target="content">
-      <div class="card mb-5">
-        <div class="card-header">{{ object_details.panel_name }}</div>
-        <div class="card-body text-center py-5" data-lazy-panel-target="body">
-          <div data-lazy-panel-target="spinner">
-            <div class="spinner-border text-secondary" role="status">
-              <span class="visually-hidden">Loading...</span>
+  {% if object_details.is_disabled_warning %}
+    {# LazyFragment instantiated but DJADMIN_LAZY_LOADING_ENABLED=False - show warning #}
+    <div class="card mb-5">
+      <div class="card-header">{{ object_details.panel_name }}</div>
+      <div class="card-body">
+        <div class="alert alert-warning mb-0">
+          <strong>Lazy loading disabled:</strong> Panel "{{ object_details.panel_name }}" (key: {{ object_details.lazy_key }})
+          was set up for lazy loading but DJADMIN_LAZY_LOADING_ENABLED=False.
+          The code is directly instantiating LazyFragment instead of using table_for()/details_table_for().
+        </div>
+      </div>
+    </div>
+  {% else %}
+    {# Render lazy loading placeholder with persistent outer wrapper #}
+    {% get_lazy_url object object_details as lazy_url %}
+    <div data-controller="lazy-panel"
+         data-lazy-panel-url-value="{{ lazy_url }}">
+      <div data-lazy-panel-target="content">
+        <div class="card mb-5">
+          <div class="card-header">{{ object_details.panel_name }}</div>
+          <div class="card-body text-center py-5" data-lazy-panel-target="body">
+            <div data-lazy-panel-target="spinner">
+              <div class="spinner-border text-secondary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted mb-0">{{ object_details.placeholder }}</p>
             </div>
-            <p class="mt-2 text-muted mb-0">{{ object_details.placeholder }}</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  {% endif %}
 {% else %}
   <div class="card mb-5">
     <div class="card-header">
