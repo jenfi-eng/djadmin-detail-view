@@ -8,7 +8,7 @@ from django.db.models.fields.files import ImageFieldFile
 from django.utils import formats, timezone
 from django.utils.html import format_html
 
-from djadmin_detail_view.defaults import TEMPLATE_TIME_FORMAT
+from djadmin_detail_view.defaults import LAZY_LOADING_ENABLED, TEMPLATE_TIME_FORMAT
 
 from .url_helpers import auto_link
 
@@ -107,6 +107,10 @@ def details_table_for(
     lazy_load_key=None,
     lazy_placeholder=None,
 ):
+    # Disable lazy loading if LAZY_LOADING_ENABLED is False
+    if not LAZY_LOADING_ENABLED:
+        lazy_load_key = None
+
     if lazy_load_key:
         # Register the lazy_load_key to detect duplicates (only on initial page load)
         if _rendering_lazy_panel.get() is None:
@@ -172,6 +176,10 @@ def table_for(
     lazy_load_key=None,
     lazy_placeholder=None,
 ):
+    # Disable lazy loading if LAZY_LOADING_ENABLED is False
+    if not LAZY_LOADING_ENABLED:
+        lazy_load_key = None
+
     if lazy_load_key:
         # Register the lazy_load_key to detect duplicates (only on initial page load)
         if _rendering_lazy_panel.get() is None:
